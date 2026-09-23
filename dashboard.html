@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>AgriGuide - Dashboard</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f1f8f3;
+        }
+
+        nav {
+            background: #176b3a;
+            padding: 18px 40px;
+            color: white;
+        }
+
+        nav h2 {
+            display: inline;
+            margin-right: 30px;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin-left: 20px;
+        }
+
+        .container {
+            width: 90%;
+            margin: 40px auto;
+        }
+
+        .welcome {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            margin-bottom: 30px;
+        }
+
+        .welcome h1 {
+            color: #176b3a;
+            margin-top: 0;
+        }
+
+        .welcome p {
+            color: #666;
+            font-size: 16px;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+            gap: 25px;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .card h2 {
+            color: #176b3a;
+        }
+
+        .card p {
+            color: #666;
+            line-height: 1.5;
+        }
+
+        .card a {
+            display: inline-block;
+            margin-top: 15px;
+            background: #176b3a;
+            color: white;
+            text-decoration: none;
+            padding: 11px 20px;
+            border-radius: 7px;
+        }
+
+        .card a:hover {
+            background: #0f542d;
+        }
+
+        .logout {
+            display: block;
+            width: fit-content;
+            margin: 35px auto;
+            background: #b3261e;
+            color: white;
+            padding: 12px 25px;
+            border-radius: 8px;
+            text-decoration: none;
+        }
+
+        .logout:hover {
+            background: #8f1d18;
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav>
+        <h2>🌱 AgriGuide</h2>
+
+        <a href="/">Home</a>
+        <a href="/dashboard">Dashboard</a>
+    </nav>
+
+    <div class="container">
+
+        <div class="welcome">
+
+            <h1>Welcome, {{ user_name }}! 👋</h1>
+
+            <p>
+                Welcome to AgriGuide — your smart farming assistant.
+                Explore crop recommendations, fertilizer information,
+                market prices and our farmer chatbot.
+            </p>
+
+        </div>
+
+        <div class="cards">
+
+            <div class="card">
+                <h2>🌱 Fertilizers</h2>
+
+                <p>
+                    Learn about different fertilizers
+                    and their uses.
+                </p>
+
+                <a href="/fertilizers">
+                    Explore Fertilizers
+                </a>
+            </div>
+
+
+            <div class="card">
+                <h2>💰 Crop Prices</h2>
+
+                <p>
+                    View sample crop prices
+                    available in AgriGuide.
+                </p>
+
+                <a href="/prices">
+                    View Prices
+                </a>
+            </div>
+
+
+            <div class="card">
+                <h2>🌾 Crop Recommendation</h2>
+
+                <p>
+                    Get crop suggestions based on
+                    soil, season and water.
+                </p>
+
+                <a href="/recommendation">
+                    Get Recommendation
+                </a>
+            </div>
+
+
+            <div class="card">
+                <h2>🤖 Farmer Chatbot</h2>
+
+                <p>
+                    Ask farming questions in
+                    English or Telugu using text or voice.
+                </p>
+
+                <a href="/chatbot">
+                    Open Chatbot
+                </a>
+            </div>
+
+
+            <div class="card">
+                <h2>👩‍💻 Developers</h2>
+
+                <p>
+                    Learn more about the
+                    AgriGuide project.
+                </p>
+
+                <a href="/developers">
+                    View Page
+                </a>
+            </div>
+
+        </div>
+
+        <a class="logout" href="/logout">
+            Logout
+        </a>
+
+    </div>
+
+</body>
+</html>
