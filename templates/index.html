@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>AgriGuide - Smart Agriculture</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background-color: #f5fff5;
+            color: #333;
+        }
+
+        nav {
+            background-color: #176b3a;
+            padding: 18px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            color: white;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin-left: 25px;
+            font-size: 16px;
+        }
+
+        nav a:hover {
+            text-decoration: underline;
+        }
+
+        .hero {
+            text-align: center;
+            padding: 90px 20px;
+            background: linear-gradient(135deg, #dff5df, #ffffff);
+        }
+
+        .hero h1 {
+            color: #176b3a;
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+
+        .hero p {
+            max-width: 750px;
+            margin: auto;
+            font-size: 19px;
+            line-height: 1.6;
+        }
+
+        .buttons {
+            margin-top: 30px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 14px 30px;
+            margin: 8px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .login {
+            background-color: #176b3a;
+            color: white;
+        }
+
+        .register {
+            background-color: #f0a500;
+            color: white;
+        }
+
+        .btn:hover {
+            opacity: 0.85;
+        }
+
+        .features {
+            padding: 60px 30px;
+            text-align: center;
+        }
+
+        .features h2 {
+            color: #176b3a;
+            font-size: 32px;
+            margin-bottom: 35px;
+        }
+
+        .cards {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            flex-wrap: wrap;
+        }
+
+        .card {
+            background-color: white;
+            width: 240px;
+            padding: 30px 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.12);
+        }
+
+        .card h3 {
+            color: #176b3a;
+            margin-bottom: 15px;
+        }
+
+        .card p {
+            line-height: 1.5;
+        }
+
+        footer {
+            background-color: #176b3a;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            margin-top: 30px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav>
+
+        <div class="logo">
+            🌱 AgriGuide
+        </div>
+
+        <div>
+            <a href="/">Home</a>
+            <a href="/login">Login</a>
+            <a href="/register">Register</a>
+            <a href="/dashboard">Dashboard</a>
+        </div>
+
+    </nav>
+
+    <section class="hero">
+
+        <h1>Smart Farming with AgriGuide 🌾</h1>
+
+        <p>
+            AgriGuide is a smart agriculture assistant that helps farmers
+            with crop recommendations, fertilizer information, crop prices,
+            and agriculture-related questions.
+        </p>
+
+        <div class="buttons">
+
+            <a href="/login" class="btn login">
+                Login
+            </a>
+
+            <a href="/register" class="btn register">
+                Register
+            </a>
+
+        </div>
+
+    </section>
+
+    <section class="features">
+
+        <h2>Our Features</h2>
+
+        <div class="cards">
+
+            <div class="card">
+                <h3>🌱 Fertilizers</h3>
+
+                <p>
+                    Learn about different fertilizers and
+                    their uses for crops.
+                </p>
+            </div>
+
+            <div class="card">
+                <h3>💰 Crop Prices</h3>
+
+                <p>
+                    View crop price information for
+                    different agricultural products.
+                </p>
+            </div>
+
+            <div class="card">
+                <h3>🌾 Crop Recommendation</h3>
+
+                <p>
+                    Get crop suggestions based on soil,
+                    season and water availability.
+                </p>
+            </div>
+
+            <div class="card">
+                <h3>🤖 Farmer Chatbot</h3>
+
+                <p>
+                    Ask agriculture-related questions
+                    using the AgriGuide chatbot.
+                </p>
+            </div>
+
+        </div>
+
+    </section>
+
+    <footer>
+
+        <p>
+            © 2026 AgriGuide | Smart Agriculture Assistant
+        </p>
+
+    </footer>
+
+</body>
+
+</html>

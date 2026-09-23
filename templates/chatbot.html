@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>AgriGuide Farmer Chatbot</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            margin: 0;
+            background-color: #eef8ee;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1000px;
+            margin: 30px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #176b3a;
+        }
+
+        .language-box {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .language-box label {
+            font-size: 18px;
+            font-weight: bold;
+            color: #176b3a;
+        }
+
+        select {
+            padding: 12px;
+            margin-left: 10px;
+            border-radius: 6px;
+            border: 1px solid #aaa;
+            font-size: 16px;
+        }
+
+        .chat-box {
+            height: 400px;
+            border: 1px solid #ccc;
+            padding: 20px;
+            overflow-y: auto;
+            background-color: #f8fff8;
+            border-radius: 8px;
+        }
+
+        .message {
+            padding: 12px;
+            margin-bottom: 12px;
+            border-radius: 10px;
+            font-size: 18px;
+        }
+
+        .bot {
+            background-color: #d9f2d9;
+        }
+
+        .user {
+            background-color: #d8e8ff;
+            text-align: right;
+        }
+
+        .input-area {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        #messageInput {
+            flex: 1;
+            padding: 15px;
+            font-size: 17px;
+            border: 1px solid #aaa;
+            border-radius: 6px;
+        }
+
+        button {
+            padding: 15px 25px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            color: white;
+        }
+
+        .send-button {
+            background-color: #176b3a;
+        }
+
+        .voice-button {
+            background-color: #176b3a;
+        }
+
+        .image-button {
+            background-color: #6f4bb8;
+        }
+
+        button:hover {
+            opacity: 0.85;
+        }
+
+        .tools {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        #imageInput {
+            display: none;
+        }
+
+        #imagePreview {
+            max-width: 300px;
+            max-height: 250px;
+            margin-top: 15px;
+            border-radius: 10px;
+            display: none;
+        }
+
+        .status {
+            margin-top: 15px;
+            color: #555;
+            font-size: 16px;
+        }
+
+        .back {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: #176b3a;
+            text-decoration: none;
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+<div class="container">
+
+    <h1>🌾 AgriGuide Farmer Chatbot</h1>
+
+
+    <!-- LANGUAGE SELECTOR -->
+
+    <div class="language-box">
+
+        <label for="language">
+            Choose Language:
+        </label>
+
+        <select id="language">
+
+            <option value="en-IN">
+                English
+            </option>
+
+            <option value="te-IN">
+                తెలుగు (Telugu)
+            </option>
+
+        </select>
+
+    </div>
+
+
+    <!-- CHAT AREA -->
+
+    <div class="chat-box" id="chatBox">
+
+        <div class="message bot">
+
+            Hello farmer! 👋<br>
+
+            You can type or speak your farming question.
+
+        </div>
+
+    </div>
+
+
+    <!-- TEXT INPUT -->
+
+    <div class="input-area">
+
+        <input
+            type="text"
+            id="messageInput"
+            placeholder="Type your question..."
+            onkeydown="handleKey(event)"
+        >
+
+        <button
+            class="send-button"
+            onclick="sendMessage()"
+        >
+            Send
+        </button>
+
+    </div>
+
+
+    <!-- TOOLS -->
+
+    <div class="tools">
+
+        <button
+            class="voice-button"
+            onclick="startVoice()"
+        >
+            🎤 Speak
+        </button>
+
+
+        <button
+            class="image-button"
+            onclick="document.getElementById('imageInput').click()"
+        >
+            🖼️ Upload Image
+        </button>
+
+    </div>
+
+
+    <!-- IMAGE INPUT -->
+
+    <input
+        type="file"
+        id="imageInput"
+        accept="image/*"
+        onchange="showImage(event)"
+    >
+
+
+    <!-- IMAGE PREVIEW -->
+
+    <img
+        id="imagePreview"
+        alt="Selected image"
+    >
+
+
+    <!-- STATUS -->
+
+    <div
+        class="status"
+        id="status"
+    >
+        Voice assistant is ready.
+    </div>
+
+
+    <a
+        href="/dashboard"
+        class="back"
+    >
+        ← Back to Dashboard
+    </a>
+
+</div>
+
+
+
+<script>
+
+
+// ==========================================
+// SEND MESSAGE
+// ==========================================
+
+function sendMessage() {
+
+    const input =
+        document.getElementById("messageInput");
+
+    const message =
+        input.value.trim();
+
+
+    if (message === "") {
+
+        return;
+
+    }
+
+
+    const chatBox =
+        document.getElementById("chatBox");
+
+
+    // Show user message
+
+    const userMessage =
+        document.createElement("div");
+
+    userMessage.className =
+        "message user";
+
+    userMessage.textContent =
+        message;
+
+    chatBox.appendChild(userMessage);
+
+
+    input.value = "";
+
+
+    // Send message to Flask
+
+    fetch("/chat", {
+
+        method: "POST",
+
+        headers: {
+
+            "Content-Type":
+                "application/json"
+
+        },
+
+        body: JSON.stringify({
+
+            message: message
+
+        })
+
+    })
+
+
+    .then(response => {
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Server error"
+            );
+
+        }
+
+        return response.json();
+
+    })
+
+
+    .then(data => {
+
+
+        // Create bot message
+
+        const botMessage =
+            document.createElement("div");
+
+        botMessage.className =
+            "message bot";
+
+        botMessage.textContent =
+            data.reply;
+
+
+        chatBox.appendChild(botMessage);
+
+
+        // ==================================
+        // TEXT TO SPEECH
+        // ==================================
+
+        const speech =
+            new SpeechSynthesisUtterance(
+                data.reply
+            );
+
+
+        // Detect Telugu
+
+        if (
+            /[\u0C00-\u0C7F]/.test(
+                data.reply
+            )
+        ) {
+
+            speech.lang =
+                "te-IN";
+
+        }
+
+        else {
+
+            speech.lang =
+                "en-IN";
+
+        }
+
+
+        speech.volume = 1;
+
+        speech.rate = 1;
+
+        speech.pitch = 1;
+
+
+        // Stop previous speech
+
+        window.speechSynthesis.cancel();
+
+
+        // Speak answer
+
+        window.speechSynthesis.speak(
+            speech
+        );
+
+
+        chatBox.scrollTop =
+            chatBox.scrollHeight;
+
+    })
+
+
+    .catch(error => {
+
+        console.log(error);
+
+
+        const errorMessage =
+            document.createElement("div");
+
+        errorMessage.className =
+            "message bot";
+
+        errorMessage.textContent =
+            "Sorry, I could not connect to the server.";
+
+        chatBox.appendChild(
+            errorMessage
+        );
+
+    });
+
+}
+
+
+
+// ==========================================
+// ENTER KEY
+// ==========================================
+
+function handleKey(event) {
+
+    if (
+        event.key === "Enter"
+    ) {
+
+        sendMessage();
+
+    }
+
+}
+
+
+
+// ==========================================
+// VOICE INPUT
+// ==========================================
+
+function startVoice() {
+
+    const SpeechRecognition =
+        window.SpeechRecognition ||
+        window.webkitSpeechRecognition;
+
+
+    if (!SpeechRecognition) {
+
+        document.getElementById(
+            "status"
+        ).textContent =
+            "Voice recognition is not supported in this browser.";
+
+        return;
+
+    }
+
+
+    const recognition =
+        new SpeechRecognition();
+
+
+    // Get selected language
+
+    const selectedLanguage =
+        document.getElementById(
+            "language"
+        ).value;
+
+
+    recognition.lang =
+        selectedLanguage;
+
+
+    recognition.continuous = false;
+
+    recognition.interimResults = false;
+
+
+    recognition.start();
+
+
+    if (
+        selectedLanguage === "te-IN"
+    ) {
+
+        document.getElementById(
+            "status"
+        ).textContent =
+            "🎤 తెలుగు మాట్లాడండి... Listening...";
+
+    }
+
+    else {
+
+        document.getElementById(
+            "status"
+        ).textContent =
+            "🎤 Listening... Speak now.";
+
+    }
+
+
+    // Voice result
+
+    recognition.onresult =
+        function(event) {
+
+
+            const text =
+                event.results[0][0]
+                    .transcript;
+
+
+            document.getElementById(
+                "messageInput"
+            ).value =
+                text;
+
+
+            if (
+                selectedLanguage === "te-IN"
+            ) {
+
+                document.getElementById(
+                    "status"
+                ).textContent =
+                    "తెలుగు voice captured. Click Send.";
+
+            }
+
+            else {
+
+                document.getElementById(
+                    "status"
+                ).textContent =
+                    "English voice captured. Click Send.";
+
+            }
+
+        };
+
+
+    recognition.onerror =
+        function(event) {
+
+            console.log(event.error);
+
+
+            document.getElementById(
+                "status"
+            ).textContent =
+                "Could not hear your voice. Please try again.";
+
+        };
+
+}
+
+
+
+// ==========================================
+// IMAGE UPLOAD
+// ==========================================
+
+function showImage(event) {
+
+    const file =
+        event.target.files[0];
+
+
+    if (!file) {
+
+        return;
+
+    }
+
+
+    const imagePreview =
+        document.getElementById(
+            "imagePreview"
+        );
+
+
+    imagePreview.src =
+        URL.createObjectURL(file);
+
+
+    imagePreview.style.display =
+        "block";
+
+
+    document.getElementById(
+        "status"
+    ).textContent =
+        "🖼️ Image selected successfully.";
+
+}
+
+
+</script>
+
+</body>
+
+</html>
