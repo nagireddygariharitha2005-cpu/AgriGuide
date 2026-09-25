@@ -139,7 +139,6 @@ def register():
 @app.route("/dashboard")
 def dashboard():
 
-    # Check whether user is logged in
     if "user_id" not in session:
         return redirect("/login")
 
@@ -362,6 +361,9 @@ def developers():
 # START APPLICATION
 # =========================
 
+# Initialize database when the application starts
+init_db()
+
+
 if __name__ == "__main__":
-    init_db()
     app.run(host="0.0.0.0", port=5000)
