@@ -326,7 +326,6 @@
 
         addMessage(message, "user");
 
-
         messageInput.value = "";
 
 
@@ -352,7 +351,10 @@
 
                     body: JSON.stringify({
 
-                        message: message
+                        message: message,
+
+                        language:
+                            languageSelect.value
 
                     })
 
@@ -560,7 +562,6 @@
 
                 }
 
-
                 else if (
                     event.error === "no-speech"
                 ) {
@@ -569,7 +570,6 @@
                         "Could not hear your voice. Please speak clearly and try again.";
 
                 }
-
 
                 else {
 
