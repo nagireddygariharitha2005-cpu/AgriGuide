@@ -1,14 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
-
-    <title>AgriGuide Farmer Chatbot</title>
+    <title>AgriGuide Assistant</title>
 
     <style>
 
@@ -19,493 +15,1335 @@
         body {
             margin: 0;
             font-family: Arial, sans-serif;
-            background: #eef8f0;
+            background: linear-gradient(135deg, #e8f5e9, #f1f8e9);
+            min-height: 100vh;
+        }
+
+        .header {
+            background: #2e7d32;
+            color: white;
+            padding: 18px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h2 {
+            margin: 0;
+        }
+
+        .back {
+            color: white;
+            text-decoration: none;
+            background: #1b5e20;
+            padding: 9px 15px;
+            border-radius: 8px;
         }
 
         .container {
-            width: 92%;
-            max-width: 1200px;
-            margin: auto;
-            padding: 25px 0;
+            width: 90%;
+            max-width: 1000px;
+            margin: 25px auto;
         }
 
-        h1 {
-            text-align: center;
-            color: #176b3a;
-            margin-bottom: 25px;
+        .chat-card {
+            background: white;
+            border-radius: 18px;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.12);
+            overflow: hidden;
         }
 
-        .language-box {
-            text-align: center;
-            margin-bottom: 25px;
+        .top-section {
+            padding: 18px;
+            border-bottom: 1px solid #ddd;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
         }
 
-        .language-box label {
+        .assistant-title {
+            color: #2e7d32;
             font-size: 20px;
             font-weight: bold;
-            color: #176b3a;
-            margin-right: 12px;
         }
 
-        #language {
-            padding: 12px 18px;
-            font-size: 17px;
+        select {
+            padding: 10px;
             border-radius: 8px;
             border: 1px solid #aaa;
+            font-size: 15px;
         }
 
-        .chat-box {
-            background: white;
-            border: 1px solid #ccc;
-            border-radius: 12px;
-            padding: 20px;
-            min-height: 450px;
-            max-height: 450px;
+        #chatBox {
+            height: 500px;
             overflow-y: auto;
+            padding: 20px;
+            background: #fafafa;
         }
 
         .message {
-            padding: 14px;
-            margin-bottom: 14px;
-            border-radius: 12px;
-            font-size: 18px;
-            line-height: 1.5;
-        }
-
-        .bot {
-            background: #d8f3d8;
+            margin: 12px 0;
+            display: flex;
         }
 
         .user {
-            background: #d7e7ff;
-            text-align: right;
+            justify-content: flex-end;
+        }
+
+        .bot {
+            justify-content: flex-start;
+        }
+
+        .bubble {
+            max-width: 75%;
+            padding: 13px 16px;
+            border-radius: 15px;
+            line-height: 1.5;
+            white-space: pre-wrap;
+        }
+
+        .user .bubble {
+            background: #2e7d32;
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+
+        .bot .bubble {
+            background: #e8f5e9;
+            color: #222;
+            border-bottom-left-radius: 4px;
         }
 
         .input-area {
+            padding: 15px;
+            border-top: 1px solid #ddd;
+            background: white;
+        }
+
+        .input-row {
             display: flex;
-            gap: 10px;
-            margin-top: 20px;
+            gap: 8px;
         }
 
         #messageInput {
             flex: 1;
-            padding: 16px;
-            font-size: 17px;
+            padding: 13px;
             border: 1px solid #aaa;
-            border-radius: 8px;
+            border-radius: 10px;
+            font-size: 15px;
+            outline: none;
         }
 
         button {
             border: none;
-            border-radius: 8px;
-            padding: 14px 20px;
-            font-size: 17px;
+            border-radius: 10px;
+            padding: 12px 15px;
             cursor: pointer;
+            font-size: 15px;
         }
 
-        #sendButton {
-            background: #176b3a;
+        #sendBtn {
+            background: #2e7d32;
             color: white;
         }
 
-        #speakButton {
-            background: #176b3a;
+        #voiceBtn {
+            background: #1565c0;
             color: white;
         }
 
-        #imageButton {
-            background: #7048b8;
+        #imageBtn {
+            background: #ef6c00;
             color: white;
         }
 
-        .buttons {
+        .quick-buttons {
             display: flex;
-            gap: 12px;
-            margin-top: 15px;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 12px;
         }
 
-        #status {
-            margin-top: 15px;
-            color: #555;
-            font-size: 16px;
+        .quick-buttons button {
+            background: #f1f8e9;
+            color: #2e7d32;
+            border: 1px solid #a5d6a7;
+            padding: 8px 12px;
+        }
+
+        .typing {
+            font-style: italic;
+            color: #666;
         }
 
         #imageInput {
             display: none;
         }
 
-        @media (max-width: 700px) {
+        @media(max-width: 700px) {
 
-            .input-area {
-                flex-direction: column;
+            .container {
+                width: 96%;
             }
 
-            .buttons {
-                flex-direction: column;
+            #chatBox {
+                height: 450px;
             }
 
+            .input-row {
+                flex-wrap: wrap;
+            }
+
+            #messageInput {
+                width: 100%;
+                flex-basis: 100%;
+            }
+
+            .bubble {
+                max-width: 90%;
+            }
         }
 
     </style>
-
 </head>
-
 
 <body>
 
+<div class="header">
+
+    <h2>🌱 AgriGuide Assistant</h2>
+
+    <a href="/dashboard" class="back">
+        Dashboard
+    </a>
+
+</div>
+
+
 <div class="container">
 
-    <h1>🌾 AgriGuide Farmer Chatbot</h1>
+    <div class="chat-card">
+
+        <div class="top-section">
+
+            <div class="assistant-title">
+                🤖 Ask AgriGuide
+            </div>
+
+            <select id="languageSelect">
+
+                <option value="en-US">
+                    English
+                </option>
+
+                <option value="te-IN">
+                    తెలుగు
+                </option>
+
+            </select>
+
+        </div>
 
 
-    <!-- LANGUAGE SELECTION -->
+        <div id="chatBox">
 
-    <div class="language-box">
+            <div class="message bot">
 
-        <label for="language">
-            Choose Language:
-        </label>
+                <div class="bubble" id="welcomeMessage">
+                    Hello farmer! 👋
+                    I am AgriGuide Assistant.
 
-        <select id="language">
+                    You can ask me about:
+                    🌾 Crops
+                    🌱 Fertilizers
+                    🌍 Soil
+                    💧 Water
+                    ☀️ Seasons
+                    🌶️ Vegetables
+                    👨‍🌾 Farming
 
-            <option value="te-IN">
-                తెలుగు (Telugu)
-            </option>
+                    You can type in English, Telugu or Roman Telugu.
+                </div>
 
-            <option value="en-US">
-                English
-            </option>
+            </div>
 
-        </select>
-
-    </div>
+        </div>
 
 
-    <!-- CHAT BOX -->
+        <div class="input-area">
 
-    <div id="chatBox" class="chat-box">
+            <div class="input-row">
 
-        <div class="message bot" id="welcomeMessage">
+                <input
+                    type="text"
+                    id="messageInput"
+                    placeholder="Ask your farming question..."
+                >
 
-            నమస్కారం రైతు! 👋<br>
-            మీ వ్యవసాయ ప్రశ్నను టైప్ చేయండి లేదా మాట్లాడండి.
+                <button id="voiceBtn">
+                    🎤
+                </button>
+
+                <button id="imageBtn">
+                    📷
+                </button>
+
+                <button id="sendBtn">
+                    Send
+                </button>
+
+            </div>
+
+
+            <div class="quick-buttons">
+
+                <button onclick="quickQuestion('What fertilizers are used for tomato?')">
+                    🍅 Tomato fertilizer
+                </button>
+
+                <button onclick="quickQuestion('What are the fertilizer names?')">
+                    🌱 Fertilizer names
+                </button>
+
+                <button onclick="quickQuestion('How much water does rice need?')">
+                    💧 Rice water
+                </button>
+
+                <button onclick="quickQuestion('Which crops are suitable for black soil?')">
+                    🌍 Soil crops
+                </button>
+
+            </div>
 
         </div>
 
     </div>
 
-
-    <!-- INPUT -->
-
-    <div class="input-area">
-
-        <input
-            type="text"
-            id="messageInput"
-            placeholder="మీ వ్యవసాయ ప్రశ్నను టైప్ చేయండి..."
-        >
-
-        <button
-            id="sendButton"
-            onclick="sendMessage()">
-
-            Send
-
-        </button>
-
-    </div>
-
-
-    <!-- BUTTONS -->
-
-    <div class="buttons">
-
-        <button
-            id="speakButton"
-            onclick="startVoice()">
-
-            🎤 Speak
-
-        </button>
-
-
-        <button
-            id="imageButton"
-            onclick="selectImage()">
-
-            🖼️ Upload Image
-
-        </button>
-
-    </div>
-
-
-    <input
-        type="file"
-        id="imageInput"
-        accept="image/*"
-        onchange="imageSelected()"
-    >
-
-
-    <div id="status"></div>
-
 </div>
+
+
+<input
+    type="file"
+    id="imageInput"
+    accept="image/*"
+>
 
 
 <script>
 
-    // ============================
-    // ELEMENTS
-    // ============================
+const chatBox = document.getElementById("chatBox");
 
-    const languageSelect =
-        document.getElementById("language");
+const messageInput =
+    document.getElementById("messageInput");
 
-    const messageInput =
-        document.getElementById("messageInput");
+const sendBtn =
+    document.getElementById("sendBtn");
 
-    const chatBox =
-        document.getElementById("chatBox");
+const voiceBtn =
+    document.getElementById("voiceBtn");
 
-    const statusText =
-        document.getElementById("status");
+const imageBtn =
+    document.getElementById("imageBtn");
 
-    const welcomeMessage =
-        document.getElementById("welcomeMessage");
+const imageInput =
+    document.getElementById("imageInput");
+
+const languageSelect =
+    document.getElementById("languageSelect");
+
+let lastTopic = "";
 
 
-    // ============================
-    // LANGUAGE CHANGE
-    // ============================
+// ========================================
+// ADD MESSAGE
+// ========================================
 
-    languageSelect.addEventListener(
-        "change",
-        function () {
+function addMessage(text, type) {
 
-            if (languageSelect.value === "te-IN") {
+    const message =
+        document.createElement("div");
 
-                messageInput.placeholder =
-                    "మీ వ్యవసాయ ప్రశ్నను టైప్ చేయండి...";
+    message.className =
+        "message " + type;
 
-                welcomeMessage.innerHTML =
-                    "నమస్కారం రైతు! 👋<br>" +
-                    "మీ వ్యవసాయ ప్రశ్నను టైప్ చేయండి లేదా మాట్లాడండి.";
 
-            }
+    const bubble =
+        document.createElement("div");
 
-            else {
+    bubble.className =
+        "bubble";
 
-                messageInput.placeholder =
-                    "Type your farming question...";
+    bubble.innerText = text;
 
-                welcomeMessage.innerHTML =
-                    "Hello farmer! 👋<br>" +
-                    "You can type or speak your farming question.";
 
-            }
+    message.appendChild(bubble);
+
+    chatBox.appendChild(message);
+
+    chatBox.scrollTop =
+        chatBox.scrollHeight;
+}
+
+
+// ========================================
+// QUICK QUESTION
+// ========================================
+
+function quickQuestion(question) {
+
+    messageInput.value = question;
+
+    sendMessage();
+
+}
+
+
+// ========================================
+// NORMALIZE TEXT
+// ========================================
+
+function normalizeText(text) {
+
+    return text
+        .toLowerCase()
+        .trim();
+
+}
+
+
+// ========================================
+// TELUGU DETECTION
+// ========================================
+
+function containsTelugu(text) {
+
+    for (let char of text) {
+
+        if (
+            char >= "\u0C00" &&
+            char <= "\u0C7F"
+        ) {
+
+            return true;
 
         }
+
+    }
+
+    return false;
+
+}
+
+
+// ========================================
+// ROMAN TELUGU DETECTION
+// ========================================
+
+function isRomanTelugu(text) {
+
+    const words = [
+
+        "em",
+        "enti",
+        "ela",
+        "enduku",
+        "enni",
+        "entha",
+        "manchi",
+        "panta",
+        "pantaki",
+        "panta ki",
+        "eruvu",
+        "eruvulu",
+        "vari",
+        "neeru",
+        "neeti",
+        "nela",
+        "raithu",
+        "raithulaki",
+        "vyavasayam",
+        "polam",
+        "vittanam",
+        "vittanalu",
+        "tomato",
+        "mirapakaya",
+        "patti",
+        "verusenaga",
+        "pasupu",
+        "mokka",
+        "mokkalu",
+        "kharif",
+        "rabi",
+        "vesavi",
+        "cheppu",
+        "cheppandi",
+        "kavali",
+        "kavala",
+        "untundi",
+        "untaya",
+        "use",
+        "vadali",
+        "vadutaaru"
+
+    ];
+
+
+    return words.some(
+        word => text.includes(word)
     );
 
-
-    // ============================
-    // SEND MESSAGE
-    // ============================
-
-    async function sendMessage() {
-
-        const message =
-            messageInput.value.trim();
+}
 
 
-        if (message === "") {
-            return;
-        }
+// ========================================
+// TELUGU MODE
+// ========================================
+
+function shouldUseTelugu(text) {
+
+    return (
+        languageSelect.value === "te-IN"
+        || containsTelugu(text)
+        || isRomanTelugu(text)
+    );
+
+}
 
 
-        addMessage(message, "user");
+// ========================================
+// LOCAL SMART FARMING ANSWER
+// ========================================
 
-        messageInput.value = "";
+function getSmartAnswer(originalText) {
 
+    const text =
+        normalizeText(originalText);
 
-        statusText.innerText =
-            languageSelect.value === "te-IN"
-            ? "సమాధానం సిద్ధం చేస్తోంది..."
-            : "Thinking...";
-
-
-        try {
-
-            const response =
-                await fetch("/chat", {
-
-                    method: "POST",
-
-                    headers: {
-
-                        "Content-Type":
-                            "application/json"
-
-                    },
-
-                    body: JSON.stringify({
-
-                        message: message,
-
-                        language:
-                            languageSelect.value
-
-                    })
-
-                });
+    const telugu =
+        shouldUseTelugu(originalText);
 
 
-            const data =
-                await response.json();
+    // ====================================
+    // DEVELOPER
+    // ====================================
 
+    if (
+        text.includes("developer")
+        || text.includes("developed")
+        || text.includes("created")
+        || text.includes("who made")
+        || text.includes("who built")
+        || text.includes("developer name")
+        || text.includes("evaru develop")
+        || text.includes("evaru create")
+        || text.includes("evaru chesaru")
+    ) {
 
-            addMessage(
-                data.reply,
-                "bot"
-            );
+        lastTopic = "developer";
 
+        if (telugu) {
 
-            speakReply(
-                data.reply
-            );
-
-
-            statusText.innerText = "";
-
+            return "ఈ AgriGuide ప్రాజెక్ట్‌ను Haritha Nagireddygari అభివృద్ధి చేశారు.";
 
         }
 
-        catch (error) {
+        return "This AgriGuide project was developed by Haritha Nagireddygari.";
 
-            console.error(error);
-
-
-            addMessage(
-
-                languageSelect.value === "te-IN"
-                ? "క్షమించండి. సమస్య ఏర్పడింది. మళ్లీ ప్రయత్నించండి."
-                : "Sorry, something went wrong. Please try again.",
-
-                "bot"
-
-            );
+    }
 
 
-            statusText.innerText =
-                languageSelect.value === "te-IN"
-                ? "చాట్‌బాట్‌కు కనెక్ట్ కాలేకపోయాము."
-                : "Unable to connect to chatbot.";
+    // ====================================
+    // GREETING
+    // ====================================
+
+    if (
+        text === "hi"
+        || text === "hello"
+        || text === "hlo"
+        || text.includes("good morning")
+        || text.includes("good evening")
+        || text.includes("namaste")
+        || text.includes("నమస్కారం")
+        || text.includes("హలో")
+    ) {
+
+        lastTopic = "greeting";
+
+        if (telugu) {
+
+            return "నమస్కారం రైతు! 👋 మీరు పంటలు, ఎరువులు, నేల, నీరు లేదా వ్యవసాయం గురించి ఏ ప్రశ్న అయినా అడగవచ్చు.";
+
+        }
+
+        return "Hello farmer! 👋 You can ask me about crops, fertilizers, soil, water, seasons and farming.";
+
+    }
+
+
+    // ====================================
+    // FERTILIZER NAMES
+    // ====================================
+
+    if (
+        text.includes("fertilizer name")
+        || text.includes("names of fertilizer")
+        || text.includes("fertilizers name")
+        || text.includes("what fertilizers")
+        || text.includes("fertilizer types")
+        || text.includes("eruvula perlu")
+        || text.includes("eruvulu perlu")
+        || text.includes("ఎరువుల పేర్లు")
+    ) {
+
+        lastTopic = "fertilizer";
+
+        if (telugu) {
+
+            return "సాధారణంగా ఉపయోగించే కొన్ని ఎరువులు:\n\n• యూరియా (Urea) – నత్రజని కోసం\n• DAP – నత్రజని మరియు ఫాస్ఫరస్ కోసం\n• MOP – పొటాషియం కోసం\n• SSP – ఫాస్ఫరస్ మరియు సల్ఫర్ కోసం\n• NPK – నత్రజని, ఫాస్ఫరస్, పొటాషియం కోసం\n\nసరైన ఎరువును నేల పరీక్ష మరియు పంట అవసరాల ఆధారంగా ఎంచుకోవడం మంచిది.";
+
+        }
+
+        return "Some commonly used fertilizers are:\n\n• Urea – mainly provides nitrogen\n• DAP – provides nitrogen and phosphorus\n• MOP – provides potassium\n• SSP – provides phosphorus and sulfur\n• NPK – provides nitrogen, phosphorus and potassium\n\nThe correct fertilizer should be selected according to soil test results and crop requirements.";
+
+    }
+
+
+    // ====================================
+    // TOMATO
+    // ====================================
+
+    if (
+        text.includes("tomato")
+        || text.includes("టమాట")
+        || text.includes("టమోట")
+    ) {
+
+        lastTopic = "tomato";
+
+        if (
+            text.includes("fertilizer")
+            || text.includes("eruvu")
+            || text.includes("ఎరువు")
+            || text.includes("ఎరువులు")
+            || text.includes("pantaki")
+            || text.includes("pantaku")
+        ) {
+
+            if (telugu) {
+
+                return "టమాట పంటకు ఎరువులు నేల పరీక్ష మరియు పంట దశను బట్టి ఇవ్వాలి. సాధారణంగా నత్రజని, ఫాస్ఫరస్ మరియు పొటాషియం అవసరం ఉంటుంది. NPK వంటి సమతుల్య ఎరువులు ఉపయోగించవచ్చు. పుష్పించే మరియు కాయ దశలో పొటాషియం అవసరం పెరగవచ్చు. స్థానిక వ్యవసాయ అధికారుల సిఫార్సును కూడా పాటించండి.";
+
+            }
+
+            return "Tomato plants need nitrogen, phosphorus and potassium. NPK fertilizers are commonly used, but the exact quantity should depend on soil-test results and crop stage. Potassium can become especially important during flowering and fruit development. Follow local agricultural recommendations for the correct dose.";
+
+        }
+
+
+        if (
+            text.includes("water")
+            || text.includes("neeru")
+            || text.includes("నీరు")
+        ) {
+
+            if (telugu) {
+
+                return "టమాట పంటకు నేల తేమను స్థిరంగా ఉంచేలా నీరు ఇవ్వాలి. నీరు ఎక్కువగా నిల్వ ఉండకుండా చూడాలి. నేల మరియు వాతావరణ పరిస్థితులను బట్టి నీటి పరిమాణాన్ని మార్చాలి.";
+
+            }
+
+            return "Tomato plants need regular moisture, but water should not remain standing around the roots. Adjust irrigation according to soil, weather and crop stage.";
+
+        }
+
+
+        if (telugu) {
+
+            return "టమాట పంటకు మంచి సూర్యకాంతి, సారవంతమైన నేల మరియు సరైన నీటి నిర్వహణ అవసరం. ఎరువులను నేల పరీక్ష ఆధారంగా ఇవ్వడం మంచిది.";
+
+        }
+
+        return "Tomatoes generally need good sunlight, fertile soil and proper water management. Fertilizer should be selected according to soil-test results and crop stage.";
+
+    }
+
+
+    // ====================================
+    // RICE
+    // ====================================
+
+    if (
+        text.includes("rice")
+        || text.includes("paddy")
+        || text.includes("vari")
+        || text.includes("వరి")
+        || text.includes("బియ్యం")
+    ) {
+
+        lastTopic = "rice";
+
+        if (
+            text.includes("fertilizer")
+            || text.includes("eruvu")
+            || text.includes("ఎరువు")
+        ) {
+
+            if (telugu) {
+
+                return "వరి పంటకు నత్రజని, ఫాస్ఫరస్ మరియు పొటాషియం వంటి పోషకాలు అవసరం. యూరియా, DAP లేదా NPK వంటి ఎరువులను నేల పరీక్ష మరియు పంట దశను బట్టి ఉపయోగిస్తారు.";
+
+            }
+
+            return "Rice requires nutrients such as nitrogen, phosphorus and potassium. Urea, DAP or NPK fertilizers may be used depending on soil-test results and crop stage.";
+
+        }
+
+
+        if (
+            text.includes("water")
+            || text.includes("neeru")
+            || text.includes("నీరు")
+        ) {
+
+            if (telugu) {
+
+                return "వరి పంటకు సాధారణంగా మంచి నీటి లభ్యత అవసరం. అయితే నీటి నిర్వహణ నేల రకం, వర్షపాతం మరియు పంట దశను బట్టి మార్చాలి.";
+
+            }
+
+            return "Rice generally needs good water availability. Irrigation and water management should be adjusted according to soil type, rainfall and crop stage.";
+
+        }
+
+
+        if (telugu) {
+
+            return "వరి పంటకు అనుకూలమైన నేల, తగిన నీరు మరియు సమతుల్య పోషకాలు అవసరం.";
+
+        }
+
+        return "Rice needs suitable soil, adequate water and balanced nutrients for healthy growth.";
+
+    }
+
+
+    // ====================================
+    // COTTON
+    // ====================================
+
+    if (
+        text.includes("cotton")
+        || text.includes("patti")
+        || text.includes("పత్తి")
+    ) {
+
+        lastTopic = "cotton";
+
+        if (telugu) {
+
+            return "పత్తి పంటకు మంచి డ్రైనేజీ ఉన్న నేల మరియు తగిన పోషకాలు అవసరం. నత్రజని, ఫాస్ఫరస్ మరియు పొటాషియం ముఖ్యమైన పోషకాలు. ఎరువుల పరిమాణాన్ని నేల పరీక్ష ఆధారంగా నిర్ణయించాలి.";
+
+        }
+
+        return "Cotton grows well in suitable, well-drained soil. Nitrogen, phosphorus and potassium are important nutrients. Fertilizer rates should be based on soil-test results and crop requirements.";
+
+    }
+
+
+    // ====================================
+    // CHILLI
+    // ====================================
+
+    if (
+        text.includes("chilli")
+        || text.includes("chili")
+        || text.includes("mirchi")
+        || text.includes("mirapakaya")
+        || text.includes("మిరప")
+    ) {
+
+        lastTopic = "chilli";
+
+        if (telugu) {
+
+            return "మిరప పంటకు మంచి డ్రైనేజీ ఉన్న నేల, సరైన నీటి నిర్వహణ మరియు సమతుల్య పోషకాలు అవసరం. NPK వంటి ఎరువులను నేల పరీక్ష ఆధారంగా ఉపయోగించవచ్చు.";
+
+        }
+
+        return "Chilli crops need well-drained soil, proper irrigation and balanced nutrients. NPK fertilizers can be used according to soil-test results and crop requirements.";
+
+    }
+
+
+    // ====================================
+    // GROUNDNUT
+    // ====================================
+
+    if (
+        text.includes("groundnut")
+        || text.includes("peanut")
+        || text.includes("verusenaga")
+        || text.includes("వేరుశెనగ")
+    ) {
+
+        lastTopic = "groundnut";
+
+        if (telugu) {
+
+            return "వేరుశెనగ పంటకు తేలికపాటి, మంచి డ్రైనేజీ ఉన్న నేల అనుకూలంగా ఉంటుంది. ఫాస్ఫరస్ మరియు కాల్షియం వంటి పోషకాలు ముఖ్యమైనవి. ఎరువులను నేల పరీక్ష ఆధారంగా ఇవ్వాలి.";
+
+        }
+
+        return "Groundnut generally prefers light, well-drained soil. Phosphorus and calcium are important nutrients. Fertilizer application should be based on soil-test results.";
+
+    }
+
+
+    // ====================================
+    // SOIL
+    // ====================================
+
+    if (
+        text.includes("soil")
+        || text.includes("nela")
+        || text.includes("నేల")
+    ) {
+
+        lastTopic = "soil";
+
+        if (
+            text.includes("black")
+            || text.includes("nalla")
+            || text.includes("నల్ల")
+        ) {
+
+            if (telugu) {
+
+                return "నల్ల నేలలో పత్తి, జొన్న, సోయాబీన్ మరియు కొన్ని ఇతర పంటలు బాగా పెరగవచ్చు. అయితే పంట ఎంపికలో నీరు, వాతావరణం మరియు స్థానిక పరిస్థితులను కూడా పరిగణించాలి.";
+
+            }
+
+            return "Black soil can be suitable for crops such as cotton, sorghum and soybean. Crop selection should also consider water availability, climate and local conditions.";
+
+        }
+
+
+        if (
+            text.includes("red")
+            || text.includes("erra")
+            || text.includes("ఎర్ర")
+        ) {
+
+            if (telugu) {
+
+                return "ఎర్ర నేలలో వేరుశెనగ, మిల్లెట్స్ మరియు కొన్ని పప్పుధాన్యాలు అనుకూలంగా ఉండవచ్చు. సరైన పంట ఎంపికకు నేల పరీక్ష ఉపయోగపడుతుంది.";
+
+            }
+
+            return "Red soil can be suitable for crops such as groundnut, millets and some pulses. Soil testing can help with crop and fertilizer decisions.";
+
+        }
+
+
+        if (telugu) {
+
+            return "నేల రకం పంట ఎంపికలో ముఖ్యమైనది. నల్ల నేల, ఎర్ర నేల, ఇసుక నేల మరియు ఇతర నేలలకు వేర్వేరు పంటలు అనుకూలంగా ఉండవచ్చు.";
+
+        }
+
+        return "Soil type is important for crop selection. Black soil, red soil, sandy soil and other soil types can support different crops.";
+
+    }
+
+
+    // ====================================
+    // WATER
+    // ====================================
+
+    if (
+        text.includes("water")
+        || text.includes("irrigation")
+        || text.includes("neeru")
+        || text.includes("neeti")
+        || text.includes("నీరు")
+        || text.includes("నీటి")
+    ) {
+
+        lastTopic = "water";
+
+        if (telugu) {
+
+            return "పంటకు అవసరమైన నీటి పరిమాణం పంట రకం, నేల, వాతావరణం మరియు పంట దశపై ఆధారపడి ఉంటుంది. నీరు ఎక్కువగా లేదా తక్కువగా ఇవ్వకుండా నేల తేమను గమనించడం మంచిది.";
+
+        }
+
+        return "Water requirements depend on crop type, soil, weather and crop stage. Avoid both over-irrigation and under-irrigation and monitor soil moisture.";
+
+    }
+
+
+    // ====================================
+    // SEASON
+    // ====================================
+
+    if (
+        text.includes("season")
+        || text.includes("kharif")
+        || text.includes("rabi")
+        || text.includes("summer")
+        || text.includes("vesavi")
+        || text.includes("కాలం")
+    ) {
+
+        lastTopic = "season";
+
+        if (telugu) {
+
+            return "భారతదేశంలో ఖరీఫ్, రబీ మరియు వేసవి కాలాల్లో వేర్వేరు పంటలు సాగు చేస్తారు. పంట ఎంపికలో స్థానిక వాతావరణం, నీటి లభ్యత మరియు నేల పరిస్థితులను పరిగణించాలి.";
+
+        }
+
+        return "Different crops are grown during Kharif, Rabi and summer seasons. Crop selection should consider local climate, water availability and soil conditions.";
+
+    }
+
+
+    // ====================================
+    // NPK
+    // ====================================
+
+    if (
+        text.includes("npk")
+        || text.includes("nitrogen")
+        || text.includes("phosphorus")
+        || text.includes("potassium")
+        || text.includes("నత్రజని")
+        || text.includes("ఫాస్ఫరస్")
+        || text.includes("పొటాషియం")
+    ) {
+
+        lastTopic = "npk";
+
+        if (telugu) {
+
+            return "NPKలో N అంటే నత్రజని, P అంటే ఫాస్ఫరస్, K అంటే పొటాషియం. ఇవి మొక్కల పెరుగుదల మరియు పంట అభివృద్ధికి ముఖ్యమైన పోషకాలు.";
+
+        }
+
+        return "In NPK, N means nitrogen, P means phosphorus and K means potassium. These are important nutrients for plant growth and crop development.";
+
+    }
+
+
+    // ====================================
+    // PEST
+    // ====================================
+
+    if (
+        text.includes("pest")
+        || text.includes("insect")
+        || text.includes("disease")
+        || text.includes("purugu")
+        || text.includes("కీటక")
+        || text.includes("పురుగు")
+        || text.includes("వ్యాధి")
+    ) {
+
+        lastTopic = "pest";
+
+        if (telugu) {
+
+            return "పురుగులు లేదా వ్యాధుల నియంత్రణలో ముందుగా సమస్యను సరిగ్గా గుర్తించడం ముఖ్యం. పంటను పరిశీలించి, అవసరమైతే స్థానిక వ్యవసాయ అధికారి లేదా నిపుణుడి సలహా తీసుకోండి.";
+
+        }
+
+        return "For pest or disease management, first identify the problem correctly. Inspect the crop and consult a local agriculture officer or qualified expert before choosing a treatment.";
+
+    }
+
+
+    // ====================================
+    // FOLLOW-UP QUESTIONS
+    // ====================================
+
+    if (
+        text.includes("what about")
+        || text.includes("tell me more")
+        || text.includes("more")
+        || text.includes("what should i use")
+        || text.includes("what can i use")
+        || text.includes("then")
+        || text.includes("mari")
+        || text.includes("inka")
+        || text.includes("inka cheppu")
+        || text.includes("inka em")
+    ) {
+
+        if (lastTopic === "tomato") {
+
+            if (telugu) {
+
+                return "టమాట పంటలో నేల పరీక్ష ఆధారంగా ఎరువులు ఇవ్వడం మంచిది. నీటిని సమంగా నిర్వహించాలి మరియు మొక్కలపై పురుగులు లేదా వ్యాధుల లక్షణాలు కనిపిస్తున్నాయా అని గమనించాలి.";
+
+            }
+
+            return "For tomatoes, use soil-test-based fertilizer recommendations, maintain consistent irrigation and regularly check plants for pests or diseases.";
+
+        }
+
+
+        if (lastTopic === "fertilizer") {
+
+            if (telugu) {
+
+                return "ఎరువుల ఎంపికలో NPK నిష్పత్తి, నేల పరీక్ష మరియు పంట దశ ముఖ్యమైనవి. ఒకే ఎరువును అన్ని పంటలకు ఒకే మోతాదులో ఉపయోగించకూడదు.";
+
+            }
+
+            return "For fertilizer selection, consider the NPK ratio, soil-test results and crop stage. The same fertilizer dose should not be used for every crop.";
+
+        }
+
+
+        if (lastTopic === "rice") {
+
+            if (telugu) {
+
+                return "వరి పంటలో నీటి నిర్వహణ, కలుపు నియంత్రణ మరియు సమతుల్య పోషకాలు ముఖ్యమైనవి.";
+
+            }
+
+            return "For rice, water management, weed control and balanced nutrition are important.";
 
         }
 
     }
 
 
-    // ============================
-    // ADD MESSAGE
-    // ============================
+    // ====================================
+    // GENERAL FARMING
+    // ====================================
 
-    function addMessage(text, type) {
+    if (
+        text.includes("farming")
+        || text.includes("agriculture")
+        || text.includes("vyavasayam")
+        || text.includes("వ్యవసాయం")
+        || text.includes("raithu")
+        || text.includes("రైతు")
+    ) {
 
-        const div =
-            document.createElement("div");
+        lastTopic = "farming";
 
+        if (telugu) {
 
-        div.className =
-            "message " + type;
+            return "వ్యవసాయంలో మంచి పంట కోసం నేల పరీక్ష, సరైన విత్తనాలు, సరైన ఎరువులు, నీటి నిర్వహణ మరియు పురుగు నియంత్రణ ముఖ్యమైనవి.";
 
+        }
 
-        div.innerText =
-            text;
-
-
-        chatBox.appendChild(div);
-
-
-        chatBox.scrollTop =
-            chatBox.scrollHeight;
+        return "Good farming depends on soil testing, suitable seeds, correct fertilizer use, proper water management and pest monitoring.";
 
     }
 
 
-    // ============================
-    // ENTER KEY
-    // ============================
+    // ====================================
+    // DEFAULT
+    // ====================================
 
-    messageInput.addEventListener(
-        "keydown",
-        function(event) {
+    if (telugu) {
 
-            if (event.key === "Enter") {
+        return "మీ ప్రశ్నను అర్థం చేసుకోవడానికి ప్రయత్నిస్తున్నాను. మీరు పంట పేరు, ఎరువు, నేల, నీరు లేదా కాలం గురించి కొంచెం వివరంగా అడగండి. ఉదాహరణకు: 'టమాట పంటకు ఏ ఎరువు వేయాలి?'";
 
-                sendMessage();
+    }
 
-            }
+    return "I can help with farming topics such as crops, fertilizers, soil, water, seasons and pests. Please include the crop name if possible. For example: 'What fertilizer is suitable for tomato?'";
 
-        }
+}
+
+
+// ========================================
+// SEND MESSAGE
+// ========================================
+
+async function sendMessage() {
+
+    const message =
+        messageInput.value.trim();
+
+
+    if (!message) {
+
+        return;
+
+    }
+
+
+    addMessage(
+        message,
+        "user"
     );
 
 
-    // ============================
-    // VOICE INPUT
-    // ============================
-
-    function startVoice() {
-
-        const SpeechRecognition =
-            window.SpeechRecognition ||
-            window.webkitSpeechRecognition;
+    messageInput.value = "";
 
 
-        if (!SpeechRecognition) {
+    // ------------------------------------
+    // SHOW TYPING
+    // ------------------------------------
 
-            statusText.innerText =
-                "Voice recognition is not supported. Please use Google Chrome.";
+    const typing =
+        document.createElement("div");
 
-            return;
+    typing.className =
+        "message bot";
+
+    typing.id =
+        "typing";
+
+    typing.innerHTML =
+        '<div class="bubble typing">AgriGuide is thinking...</div>';
+
+    chatBox.appendChild(typing);
+
+    chatBox.scrollTop =
+        chatBox.scrollHeight;
+
+
+    // ------------------------------------
+    // FIRST USE OUR LOCAL SMART SYSTEM
+    // ------------------------------------
+
+    const answer =
+        getSmartAnswer(message);
+
+
+    // ------------------------------------
+    // REMOVE TYPING
+    // ------------------------------------
+
+    setTimeout(() => {
+
+        const typingElement =
+            document.getElementById("typing");
+
+        if (typingElement) {
+
+            typingElement.remove();
 
         }
 
 
-        const recognition =
-            new SpeechRecognition();
+        addMessage(
+            answer,
+            "bot"
+        );
 
 
-        recognition.lang =
-            languageSelect.value;
+        speakAnswer(answer);
+
+    }, 400);
+
+}
 
 
-        recognition.continuous =
-            false;
+// ========================================
+// ENTER KEY
+// ========================================
+
+messageInput.addEventListener(
+    "keydown",
+    function(event) {
+
+        if (event.key === "Enter") {
+
+            sendMessage();
+
+        }
+
+    }
+);
 
 
-        recognition.interimResults =
-            false;
+// ========================================
+// SEND BUTTON
+// ========================================
+
+sendBtn.addEventListener(
+    "click",
+    sendMessage
+);
 
 
-        recognition.maxAlternatives =
-            1;
+// ========================================
+// LANGUAGE CHANGE
+// ========================================
+
+languageSelect.addEventListener(
+    "change",
+    function() {
+
+        const welcome =
+            document.getElementById(
+                "welcomeMessage"
+            );
 
 
         if (languageSelect.value === "te-IN") {
 
-            statusText.innerText =
-                "🎤 తెలుగు వినబడుతోంది... మాట్లాడండి.";
+            welcome.innerText =
+                "నమస్కారం రైతు! 👋\n\nనేను AgriGuide Assistant.\n\nమీరు పంటలు, ఎరువులు, నేల, నీరు, కాలం మరియు వ్యవసాయం గురించి తెలుగులో ప్రశ్నలు అడగవచ్చు.\n\nమీరు Roman Teluguలో కూడా టైప్ చేయవచ్చు.";
+
+            messageInput.placeholder =
+                "మీ వ్యవసాయ ప్రశ్నను అడగండి...";
 
         }
 
         else {
 
-            statusText.innerText =
-                "🎤 Listening... Speak now.";
+            welcome.innerText =
+                "Hello farmer! 👋\n\nI am AgriGuide Assistant.\n\nYou can ask me about crops, fertilizers, soil, water, seasons and farming.\n\nYou can type in English, Telugu or Roman Telugu.";
+
+            messageInput.placeholder =
+                "Ask your farming question...";
 
         }
+
+    }
+);
+
+
+// ========================================
+// TEXT TO SPEECH
+// ========================================
+
+function speakAnswer(text) {
+
+    if (!("speechSynthesis" in window)) {
+
+        return;
+
+    }
+
+
+    window.speechSynthesis.cancel();
+
+
+    const speech =
+        new SpeechSynthesisUtterance(text);
+
+
+    speech.lang =
+        languageSelect.value;
+
+
+    speech.rate = 0.9;
+
+    speech.pitch = 1;
+
+
+    window.speechSynthesis.speak(
+        speech
+    );
+
+}
+
+
+// ========================================
+// VOICE INPUT
+// ========================================
+
+let recognition;
+
+
+if (
+    "webkitSpeechRecognition" in window
+    || "SpeechRecognition" in window
+) {
+
+    const SpeechRecognition =
+        window.SpeechRecognition
+        || window.webkitSpeechRecognition;
+
+
+    recognition =
+        new SpeechRecognition();
+
+
+    recognition.continuous =
+        false;
+
+    recognition.interimResults =
+        false;
+
+
+    recognition.onstart =
+        function() {
+
+            voiceBtn.innerText =
+                "🔴";
+
+        };
+
+
+    recognition.onend =
+        function() {
+
+            voiceBtn.innerText =
+                "🎤";
+
+        };
+
+
+    recognition.onerror =
+        function(event) {
+
+            voiceBtn.innerText =
+                "🎤";
+
+            console.log(
+                "Voice error:",
+                event.error
+            );
+
+        };
+
+
+    recognition.onresult =
+        function(event) {
+
+            const transcript =
+                event.results[0][0].transcript;
+
+
+            messageInput.value =
+                transcript;
+
+
+            sendMessage();
+
+        };
+
+}
+
+
+voiceBtn.addEventListener(
+    "click",
+    function() {
+
+        if (!recognition) {
+
+            alert(
+                "Voice input is not supported by this browser. Please use Google Chrome."
+            );
+
+            return;
+
+        }
+
+
+        recognition.lang =
+            languageSelect.value;
 
 
         try {
@@ -514,159 +1352,65 @@
 
         }
 
-        catch (error) {
+        catch(error) {
 
             console.log(error);
 
         }
 
-
-        recognition.onresult =
-            function(event) {
-
-                const transcript =
-                    event.results[0][0].transcript;
+    }
+);
 
 
-                messageInput.value =
-                    transcript;
+// ========================================
+// IMAGE BUTTON
+// ========================================
 
+imageBtn.addEventListener(
+    "click",
+    function() {
 
-                statusText.innerText =
-                    languageSelect.value === "te-IN"
-                    ? "వాయిస్ అందింది..."
-                    : "Voice received.";
-
-
-                sendMessage();
-
-            };
-
-
-        recognition.onerror =
-            function(event) {
-
-                console.log(
-                    "Voice error:",
-                    event.error
-                );
-
-
-                if (
-                    event.error === "not-allowed" ||
-                    event.error === "service-not-allowed"
-                ) {
-
-                    statusText.innerText =
-                        "Microphone permission is blocked. Please allow microphone access in Chrome.";
-
-                }
-
-                else if (
-                    event.error === "no-speech"
-                ) {
-
-                    statusText.innerText =
-                        "Could not hear your voice. Please speak clearly and try again.";
-
-                }
-
-                else {
-
-                    statusText.innerText =
-                        "Voice error: " + event.error;
-
-                }
-
-            };
-
-
-        recognition.onend =
-            function() {
-
-                console.log(
-                    "Voice recognition ended."
-                );
-
-            };
+        imageInput.click();
 
     }
+);
 
 
-    // ============================
-    // VOICE OUTPUT
-    // ============================
+imageInput.addEventListener(
+    "change",
+    function() {
 
-    function speakReply(text) {
+        if (imageInput.files.length > 0) {
 
-        if (
-            !("speechSynthesis" in window)
-        ) {
-
-            return;
-
-        }
+            const file =
+                imageInput.files[0];
 
 
-        window.speechSynthesis.cancel();
+            addMessage(
+                "📷 Image selected: " + file.name,
+                "user"
+            );
 
 
-        const speech =
-            new SpeechSynthesisUtterance(text);
+            const answer =
+                languageSelect.value === "te-IN"
+
+                ? "చిత్రం ఎంపిక చేయబడింది. ప్రస్తుతం ఈ వెర్షన్‌లో చిత్రాన్ని స్వయంచాలకంగా విశ్లేషించలేను. పంట సమస్యను టెక్స్ట్‌లో వివరించండి."
+
+                : "The image has been selected. In this version, I cannot automatically analyze the image yet. Please describe the crop problem in text.";
 
 
-        speech.lang =
-            languageSelect.value;
-
-
-        speech.rate =
-            0.9;
-
-
-        speech.pitch =
-            1;
-
-
-        window.speechSynthesis.speak(
-            speech
-        );
-
-    }
-
-
-    // ============================
-    // IMAGE UPLOAD
-    // ============================
-
-    function selectImage() {
-
-        document
-            .getElementById("imageInput")
-            .click();
-
-    }
-
-
-    function imageSelected() {
-
-        const file =
-            document
-                .getElementById("imageInput")
-                .files[0];
-
-
-        if (file) {
-
-            statusText.innerText =
-                "Image selected: " +
-                file.name;
+            addMessage(
+                answer,
+                "bot"
+            );
 
         }
 
     }
+);
 
 </script>
 
 </body>
-
 </html>
