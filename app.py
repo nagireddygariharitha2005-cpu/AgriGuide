@@ -280,12 +280,20 @@ def chat():
         })
 
 
-    data = request.get_json()
+    data = request.get_json() or {}
+
 
     message = data.get(
         "message",
         ""
     ).strip()
+
+
+    selected_language = data.get(
+        "language",
+        "en-US"
+    )
+
 
     message_lower = message.lower()
 
@@ -319,10 +327,19 @@ def chat():
         for keyword in developer_keywords
     ):
 
-        reply = (
-            "This AgriGuide project was developed by "
-            "Haritha Nagireddygari."
-        )
+        if selected_language == "te-IN":
+
+            reply = (
+                "ఈ AgriGuide ప్రాజెక్ట్‌ను "
+                "Haritha Nagireddygari అభివృద్ధి చేశారు."
+            )
+
+        else:
+
+            reply = (
+                "This AgriGuide project was developed by "
+                "Haritha Nagireddygari."
+            )
 
         return jsonify({
             "reply": reply
@@ -330,25 +347,80 @@ def chat():
 
 
     # =========================
-    # TELUGU DETECTION
+    # TELUGU SCRIPT DETECTION
     # =========================
 
-    is_telugu = any(
+    is_telugu_script = any(
         "\u0C00" <= char <= "\u0C7F"
         for char in message
     )
 
 
     # =========================
-    # TELUGU RESPONSES
+    # ROMANIZED TELUGU DETECTION
     # =========================
 
-    if is_telugu:
+    roman_telugu_words = [
+
+        "vari",
+        "panta",
+        "pantaku",
+        "eruvu",
+        "eruvulu",
+        "manchidi",
+        "manchive",
+        "nela",
+        "neelu",
+        "neeti",
+        "raithu",
+        "vyavasayam",
+        "vyavasaya",
+        "polam",
+        "vittanalu",
+        "vittanam",
+        "dhanam",
+        "verusenaga",
+        "mokkalu",
+        "panta",
+        "kharif",
+        "rabi",
+        "vesavi",
+        "mirapakaya",
+        "pasupu",
+        "patti",
+        "mokku",
+        "ఎరువు"
+    ]
+
+
+    is_roman_telugu = any(
+        word in message_lower
+        for word in roman_telugu_words
+    )
+
+
+    # =========================
+    # TELUGU MODE
+    # =========================
+
+    if (
+        selected_language == "te-IN"
+        or is_telugu_script
+        or is_roman_telugu
+    ):
+
+
+        # -------------------------
+        # GREETING
+        # -------------------------
 
         if (
             "హలో" in message
             or "నమస్కారం" in message
             or "హాయ్" in message
+            or "hello" in message_lower
+            or "hi" in message_lower
+            or "hlo" in message_lower
         ):
 
             reply = (
@@ -359,15 +431,33 @@ def chat():
             )
 
 
-        elif "వరి" in message:
+        # -------------------------
+        # RICE
+        # -------------------------
+
+        elif (
+            "వరి" in message
+            or "vari" in message_lower
+        ):
 
             reply = (
                 "వరి పంటకు సాధారణంగా మంచి నీటి లభ్యత "
-                "మరియు అనుకూలమైన నేల పరిస్థితులు అవసరం."
+                "మరియు అనుకూలమైన నేల పరిస్థితులు అవసరం. "
+                "ఎరువుల ఎంపికను నేల పరీక్ష మరియు పంట "
+                "అవసరాల ఆధారంగా చేయడం మంచిది."
             )
 
 
-        elif "ఎరువు" in message:
+        # -------------------------
+        # FERTILIZER
+        # -------------------------
+
+        elif (
+            "ఎరువు" in message
+            or "ఎరువులు" in message
+            or "eruvu" in message_lower
+            or "eruvulu" in message_lower
+        ):
 
             reply = (
                 "ఎరువులు పంటలకు అవసరమైన పోషకాలను "
@@ -376,7 +466,15 @@ def chat():
             )
 
 
-        elif "పంట" in message:
+        # -------------------------
+        # CROP
+        # -------------------------
+
+        elif (
+            "పంట" in message
+            or "panta" in message_lower
+            or "pantaku" in message_lower
+        ):
 
             reply = (
                 "పంట ఎంపికలో నేల రకం, కాలం మరియు "
@@ -385,7 +483,14 @@ def chat():
             )
 
 
-        elif "నేల" in message:
+        # -------------------------
+        # SOIL
+        # -------------------------
+
+        elif (
+            "నేల" in message
+            or "nela" in message_lower
+        ):
 
             reply = (
                 "నేల రకం పంట ఎంపికలో ముఖ్యమైన అంశం. "
@@ -394,20 +499,46 @@ def chat():
             )
 
 
+        # -------------------------
+        # WATER
+        # -------------------------
+
+        elif (
+            "నీరు" in message
+            or "నీటి" in message
+            or "neeru" in message_lower
+            or "neeti" in message_lower
+        ):
+
+            reply = (
+                "పంటకు అవసరమైన నీటి పరిమాణం పంట రకం, "
+                "నేల మరియు కాలాన్ని బట్టి మారుతుంది."
+            )
+
+
+        # -------------------------
+        # DEFAULT TELUGU
+        # -------------------------
+
         else:
 
             reply = (
                 "నేను AgriGuide Assistant. "
-                "పంటలు, ఎరువులు, నేల మరియు వ్యవసాయం "
-                "గురించి తెలుగులో మీ ప్రశ్న అడగండి."
+                "పంటలు, ఎరువులు, నేల, నీరు మరియు "
+                "వ్యవసాయం గురించి తెలుగులో మీ ప్రశ్న అడగండి."
             )
 
 
     # =========================
-    # ENGLISH RESPONSES
+    # ENGLISH MODE
     # =========================
 
     else:
+
+
+        # -------------------------
+        # GREETING
+        # -------------------------
 
         if (
             "hello" in message_lower
@@ -421,6 +552,10 @@ def chat():
             )
 
 
+        # -------------------------
+        # FERTILIZER
+        # -------------------------
+
         elif "fertilizer" in message_lower:
 
             reply = (
@@ -430,6 +565,10 @@ def chat():
             )
 
 
+        # -------------------------
+        # RICE
+        # -------------------------
+
         elif "rice" in message_lower:
 
             reply = (
@@ -438,6 +577,10 @@ def chat():
             )
 
 
+        # -------------------------
+        # CROP
+        # -------------------------
+
         elif "crop" in message_lower:
 
             reply = (
@@ -445,6 +588,10 @@ def chat():
                 "on soil, season and water availability."
             )
 
+
+        # -------------------------
+        # SOIL
+        # -------------------------
 
         elif "soil" in message_lower:
 
@@ -455,12 +602,28 @@ def chat():
             )
 
 
+        # -------------------------
+        # WATER
+        # -------------------------
+
+        elif "water" in message_lower:
+
+            reply = (
+                "Water requirements depend on the crop, "
+                "soil type and season."
+            )
+
+
+        # -------------------------
+        # DEFAULT ENGLISH
+        # -------------------------
+
         else:
 
             reply = (
                 "I am AgriGuide Assistant. "
                 "Please ask me about crops, fertilizers, "
-                "soil or farming."
+                "soil, water or farming."
             )
 
 
