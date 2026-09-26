@@ -10,6 +10,7 @@ app.secret_key = "agriguide_secret_key"
 # =========================
 
 def init_db():
+
     conn = sqlite3.connect("agriguide.db")
     cursor = conn.cursor()
 
@@ -32,6 +33,7 @@ def init_db():
 
 @app.route("/")
 def home():
+
     return render_template("index.html")
 
 
@@ -60,6 +62,7 @@ def login():
         conn.close()
 
         if user:
+
             session["user_id"] = user[0]
             session["user_name"] = user[1]
             session["user_email"] = user[2]
@@ -91,6 +94,7 @@ def register():
         confirm_password = request.form["confirm_password"]
 
         if password != confirm_password:
+
             return """
             <script>
                 alert("Passwords do not match");
@@ -140,9 +144,13 @@ def register():
 def dashboard():
 
     if "user_id" not in session:
+
         return redirect("/login")
 
-    user_name = session.get("user_name", "Farmer")
+    user_name = session.get(
+        "user_name",
+        "Farmer"
+    )
 
     return render_template(
         "dashboard.html",
@@ -170,9 +178,12 @@ def logout():
 def fertilizers():
 
     if "user_id" not in session:
+
         return redirect("/login")
 
-    return render_template("fertilizers.html")
+    return render_template(
+        "fertilizers.html"
+    )
 
 
 # =========================
@@ -183,19 +194,26 @@ def fertilizers():
 def prices():
 
     if "user_id" not in session:
+
         return redirect("/login")
 
-    return render_template("prices.html")
+    return render_template(
+        "prices.html"
+    )
 
 
 # =========================
 # CROP RECOMMENDATION
 # =========================
 
-@app.route("/recommendation", methods=["GET", "POST"])
+@app.route(
+    "/recommendation",
+    methods=["GET", "POST"]
+)
 def recommendation():
 
     if "user_id" not in session:
+
         return redirect("/login")
 
     result = ""
@@ -207,18 +225,23 @@ def recommendation():
         water = request.form["water"]
 
         if soil == "black" and season == "kharif":
+
             result = "Rice or Cotton"
 
         elif soil == "red" and water == "low":
+
             result = "Millets or Groundnut"
 
         elif season == "rabi":
+
             result = "Wheat or Chickpea"
 
         elif season == "summer" and water == "high":
+
             result = "Rice or Vegetables"
 
         else:
+
             result = "Maize or suitable local crops"
 
     return render_template(
@@ -235,9 +258,12 @@ def recommendation():
 def chatbot():
 
     if "user_id" not in session:
+
         return redirect("/login")
 
-    return render_template("chatbot.html")
+    return render_template(
+        "chatbot.html"
+    )
 
 
 # =========================
@@ -248,100 +274,199 @@ def chatbot():
 def chat():
 
     if "user_id" not in session:
-        return jsonify({"reply": "Please login first."})
+
+        return jsonify({
+            "reply": "Please login first."
+        })
+
 
     data = request.get_json()
 
-    message = data.get("message", "").strip()
+    message = data.get(
+        "message",
+        ""
+    ).strip()
+
     message_lower = message.lower()
+
+
+    # =========================
+    # DEVELOPER QUESTIONS
+    # =========================
+
+    developer_keywords = [
+
+        "who developed",
+        "who develop",
+        "who created",
+        "who create",
+        "who made",
+        "who is the developer",
+        "developer of",
+        "developed this project",
+        "created this project",
+        "made this project",
+        "who built",
+        "who build",
+        "developer name",
+        "project developer"
+
+    ]
+
+
+    if any(
+        keyword in message_lower
+        for keyword in developer_keywords
+    ):
+
+        reply = (
+            "This AgriGuide project was developed by "
+            "Haritha Nagireddygari."
+        )
+
+        return jsonify({
+            "reply": reply
+        })
+
+
+    # =========================
+    # TELUGU DETECTION
+    # =========================
 
     is_telugu = any(
         "\u0C00" <= char <= "\u0C7F"
         for char in message
     )
 
+
+    # =========================
+    # TELUGU RESPONSES
+    # =========================
+
     if is_telugu:
 
-        if "హలో" in message or "నమస్కారం" in message or "హాయ్" in message:
+        if (
+            "హలో" in message
+            or "నమస్కారం" in message
+            or "హాయ్" in message
+        ):
+
             reply = (
                 "నమస్కారం రైతు! 👋 "
                 "అగ్రిగైడ్‌కు స్వాగతం. "
-                "పంటలు, ఎరువులు, నేల లేదా వ్యవసాయం గురించి "
-                "మీరు నన్ను అడగవచ్చు."
+                "పంటలు, ఎరువులు, నేల లేదా వ్యవసాయం "
+                "గురించి మీరు నన్ను అడగవచ్చు."
             )
 
+
         elif "వరి" in message:
+
             reply = (
                 "వరి పంటకు సాధారణంగా మంచి నీటి లభ్యత "
                 "మరియు అనుకూలమైన నేల పరిస్థితులు అవసరం."
             )
 
+
         elif "ఎరువు" in message:
+
             reply = (
-                "ఎరువులు పంటలకు అవసరమైన పోషకాలను అందిస్తాయి. "
-                "పంట మరియు నేల పరిస్థితులకు అనుగుణంగా "
-                "సరైన ఎరువును ఎంచుకోవాలి."
+                "ఎరువులు పంటలకు అవసరమైన పోషకాలను "
+                "అందిస్తాయి. పంట మరియు నేల పరిస్థితులకు "
+                "అనుగుణంగా సరైన ఎరువును ఎంచుకోవాలి."
             )
+
 
         elif "పంట" in message:
+
             reply = (
                 "పంట ఎంపికలో నేల రకం, కాలం మరియు "
-                "నీటి లభ్యత వంటి అంశాలను పరిగణలోకి తీసుకోవాలి."
+                "నీటి లభ్యత వంటి అంశాలను పరిగణలోకి "
+                "తీసుకోవాలి."
             )
 
+
         elif "నేల" in message:
+
             reply = (
                 "నేల రకం పంట ఎంపికలో ముఖ్యమైన అంశం. "
                 "వేర్వేరు నేలలకు వేర్వేరు పంటలు "
                 "అనుకూలంగా ఉండవచ్చు."
             )
 
+
         else:
+
             reply = (
                 "నేను AgriGuide Assistant. "
                 "పంటలు, ఎరువులు, నేల మరియు వ్యవసాయం "
                 "గురించి తెలుగులో మీ ప్రశ్న అడగండి."
             )
 
+
+    # =========================
+    # ENGLISH RESPONSES
+    # =========================
+
     else:
 
-        if "hello" in message_lower or "hi" in message_lower or "hlo" in message_lower:
-            reply = "Hello farmer! 👋 How can I help you today?"
+        if (
+            "hello" in message_lower
+            or "hi" in message_lower
+            or "hlo" in message_lower
+        ):
+
+            reply = (
+                "Hello farmer! 👋 "
+                "How can I help you today?"
+            )
+
 
         elif "fertilizer" in message_lower:
+
             reply = (
                 "Fertilizers provide nutrients to crops. "
-                "Choose fertilizers according to the crop "
-                "and soil conditions."
+                "Choose fertilizers according to the "
+                "crop and soil conditions."
             )
+
 
         elif "rice" in message_lower:
+
             reply = (
-                "Rice generally needs good water availability "
-                "and suitable soil conditions."
+                "Rice generally needs good water "
+                "availability and suitable soil conditions."
             )
+
 
         elif "crop" in message_lower:
+
             reply = (
-                "I can help with crop information based on "
-                "soil, season and water availability."
+                "I can help with crop information based "
+                "on soil, season and water availability."
             )
+
 
         elif "soil" in message_lower:
+
             reply = (
-                "Soil type is important when selecting crops. "
-                "Different crops grow better in different "
-                "soil conditions."
+                "Soil type is important when selecting "
+                "crops. Different crops grow better in "
+                "different soil conditions."
             )
 
+
         else:
+
             reply = (
                 "I am AgriGuide Assistant. "
                 "Please ask me about crops, fertilizers, "
                 "soil or farming."
             )
 
-    return jsonify({"reply": reply})
+
+    return jsonify({
+        "reply": reply
+    })
 
 
 # =========================
@@ -352,18 +477,28 @@ def chat():
 def developers():
 
     if "user_id" not in session:
+
         return redirect("/login")
 
-    return render_template("developers.html")
+    return render_template(
+        "developers.html"
+    )
+
+
+# =========================
+# INITIALIZE DATABASE
+# =========================
+
+init_db()
 
 
 # =========================
 # START APPLICATION
 # =========================
 
-# Initialize database when the application starts
-init_db()
-
-
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
+
+    app.run(
+        host="0.0.0.0",
+        port=5000
+    )
