@@ -1,8 +1,13 @@
 from flask import Flask, render_template, request, jsonify, redirect, session
+import os
 import sqlite3
 
 app = Flask(__name__)
 app.secret_key = "agriguide_secret_key"
+
+# Vercel's filesystem is read-only except /tmp, so the SQLite file lives there
+# when running on Vercel (data is temporary there) and locally otherwise.
+DB_PATH = "/tmp/agriguide.db" if os.environ.get("VERCEL") else "agriguide.db"
 
 
 # =========================
@@ -11,7 +16,7 @@ app.secret_key = "agriguide_secret_key"
 
 def init_db():
 
-    conn = sqlite3.connect("agriguide.db")
+    conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
 
     cursor.execute("""
@@ -49,7 +54,7 @@ def login():
         email = request.form["email"]
         password = request.form["password"]
 
-        conn = sqlite3.connect("agriguide.db")
+        conn = sqlite3.connect(DB_PATH)
         cursor = conn.cursor()
 
         cursor.execute(
@@ -102,7 +107,7 @@ def register():
             </script>
             """
 
-        conn = sqlite3.connect("agriguide.db")
+        conn = sqlite3.connect(DB_PATH)
         cursor = conn.cursor()
 
         try:
