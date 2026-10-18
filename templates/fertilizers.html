@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgriGuide - Fertilizer Guide & Dosage Calculator / ఎరువుల సమాచారం</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f1f8f3;
+            color: #2c3e50;
+        }
+
+        nav {
+            background: #176b3a;
+            padding: 16px 30px;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        nav h2 {
+            font-size: 22px;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin-left: 20px;
+            font-weight: 500;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1100px;
+            margin: 35px auto;
+        }
+
+        h1 {
+            color: #176b3a;
+            text-align: center;
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .intro {
+            text-align: center;
+            color: #555;
+            margin-bottom: 30px;
+            font-size: 15px;
+        }
+
+        /* Calculator Section */
+        .calculator-card {
+            background: white;
+            padding: 25px 30px;
+            border-radius: 14px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.07);
+            margin-bottom: 35px;
+            border-left: 5px solid #176b3a;
+        }
+
+        .calculator-card h2 {
+            color: #176b3a;
+            font-size: 20px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .calc-form {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: flex-end;
+            margin-bottom: 20px;
+        }
+
+        .calc-group {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .calc-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: bold;
+            font-size: 13.5px;
+            color: #333;
+        }
+
+        .calc-group select, .calc-group input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1.5px solid #ccc;
+            border-radius: 7px;
+            font-size: 15px;
+        }
+
+        .calc-btn {
+            background: #176b3a;
+            color: white;
+            padding: 11px 22px;
+            border: none;
+            border-radius: 7px;
+            font-weight: bold;
+            cursor: pointer;
+            height: 44px;
+        }
+
+        .calc-btn:hover {
+            background: #0f542d;
+        }
+
+        .dosage-results {
+            background: #f7fbf8;
+            border: 1px solid #d4ecd9;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 15px;
+        }
+
+        .dosage-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .dosage-pill {
+            background: white;
+            padding: 12px 16px;
+            border-radius: 8px;
+            border: 1px solid #c8e6c9;
+            text-align: center;
+        }
+
+        .dosage-pill span {
+            display: block;
+            font-size: 13px;
+            color: #666;
+        }
+
+        .dosage-pill strong {
+            font-size: 20px;
+            color: #176b3a;
+        }
+
+        .schedule-box {
+            background: white;
+            border-radius: 8px;
+            padding: 14px 18px;
+            border: 1px solid #e2e8f0;
+            font-size: 14px;
+            line-height: 1.5;
+            margin-top: 10px;
+        }
+
+        .disclaimer-box {
+            background: #fff8e6;
+            border: 1px solid #ffeeba;
+            color: #856404;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            margin-top: 15px;
+        }
+
+        /* Search Bar */
+        .search-section {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        .search-form {
+            display: flex;
+            width: 100%;
+            max-width: 550px;
+            gap: 10px;
+        }
+
+        .search-form input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 1.5px solid #ccc;
+            border-radius: 8px;
+            font-size: 15px;
+        }
+
+        .search-form button {
+            background: #176b3a;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* Fertilizer Cards */
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
+
+        .card {
+            background: white;
+            padding: 24px;
+            border-radius: 14px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+            border-top: 4px solid #176b3a;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .card h3 {
+            color: #176b3a;
+            font-size: 20px;
+            margin-bottom: 4px;
+        }
+
+        .card-telugu {
+            color: #4a5568;
+            font-weight: bold;
+            font-size: 15px;
+            margin-bottom: 10px;
+        }
+
+        .badge {
+            display: inline-block;
+            background: #eef7f2;
+            color: #176b3a;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12.5px;
+            font-weight: bold;
+            margin-bottom: 12px;
+        }
+
+        .card p {
+            color: #4a5568;
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 12px;
+        }
+
+        .card-tip {
+            background: #f7faf8;
+            border-left: 3px solid #176b3a;
+            padding: 8px 12px;
+            font-size: 13px;
+            color: #274732;
+            margin-top: 8px;
+        }
+
+        .card-warning {
+            background: #fff5f5;
+            border-left: 3px solid #e53e3e;
+            padding: 8px 12px;
+            font-size: 12.5px;
+            color: #9b2c2c;
+            margin-top: 8px;
+        }
+
+        .back {
+            display: block;
+            width: fit-content;
+            margin: 40px auto;
+            background: #176b3a;
+            color: white;
+            padding: 12px 25px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .back:hover {
+            background: #0f542d;
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav>
+        <h2>🌱 AgriGuide</h2>
+        <div>
+            <a href="/">Home</a>
+            <a href="/dashboard">Dashboard</a>
+            <a href="/recommendation">Crop Recommendation</a>
+            <a href="/chatbot">Chatbot</a>
+        </div>
+    </nav>
+
+    <div class="container">
+
+        <h1>🌾 Fertilizer Information & Dosage Calculator</h1>
+        <p class="intro">
+            Learn about balanced crop nutrition (NPK), application guidelines, and calculate indicative field dosages in English and Telugu.
+        </p>
+
+        <!-- CALCULATOR SECTION -->
+        <div class="calculator-card">
+            <h2>🧮 Indicative Fertilizer Dosage Calculator / ఎరువుల మోతాదు కాలిక్యులేటర్</h2>
+
+            <form class="calc-form" method="GET" action="/fertilizers">
+                {% if search_query %}
+                <input type="hidden" name="search" value="{{ search_query }}">
+                {% endif %}
+
+                <div class="calc-group">
+                    <label>Select Crop / పంటను ఎంచుకోండి:</label>
+                    <select name="crop">
+                        <option value="rice" {% if selected_crop == 'rice' %}selected{% endif %}>Rice / Paddy (వరి)</option>
+                        <option value="cotton" {% if selected_crop == 'cotton' %}selected{% endif %}>Cotton (పత్తి)</option>
+                        <option value="maize" {% if selected_crop == 'maize' %}selected{% endif %}>Maize / Corn (మొక్కజొన్న)</option>
+                        <option value="groundnut" {% if selected_crop == 'groundnut' %}selected{% endif %}>Groundnut (వేరుశనగ)</option>
+                        <option value="chilli" {% if selected_crop == 'chilli' %}selected{% endif %}>Chilli / Mirchi (మిరప)</option>
+                    </select>
+                </div>
+
+                <div class="calc-group">
+                    <label>Field Area (in Acres) / ఎకరాల విస్తీర్ణం:</label>
+                    <input type="number" name="acres" value="{{ selected_acres }}" step="0.5" min="0.5" max="50">
+                </div>
+
+                <button type="submit" class="calc-btn">Calculate / లెక్కించండి</button>
+            </form>
+
+            {% if dosage %}
+            <div class="dosage-results">
+                <h4 style="color: #176b3a; margin-bottom: 12px;">
+                    Estimated Nutrient Requirement for {{ selected_acres }} Acre(s) of {{ selected_crop|capitalize }}:
+                </h4>
+
+                <div class="dosage-grid">
+                    <div class="dosage-pill">
+                        <span>Urea / యూరియా (50kg bags)</span>
+                        <strong>{{ dosage.urea_bags }} Bags</strong>
+                    </div>
+                    <div class="dosage-pill">
+                        <span>DAP / డీఏపీ (50kg bags)</span>
+                        <strong>{{ dosage.dap_bags }} Bags</strong>
+                    </div>
+                    <div class="dosage-pill">
+                        <span>MOP / పొటాష్ (50kg bags)</span>
+                        <strong>{{ dosage.mop_bags }} Bags</strong>
+                    </div>
+                    <div class="dosage-pill">
+                        <span>{{ dosage.zinc_or_gypsum_unit }}</span>
+                        <strong>{{ dosage.zinc_or_gypsum }}</strong>
+                    </div>
+                </div>
+
+                <div class="schedule-box">
+                    <strong>📅 Application Schedule (English):</strong><br>
+                    {{ dosage.schedule_en }}
+                    <hr style="margin: 8px 0; border: none; border-top: 1px dashed #ddd;">
+                    <strong>📅 ఎరువులు వేసే సమయాలు (తెలుగు):</strong><br>
+                    {{ dosage.schedule_te }}
+                </div>
+
+                <div class="disclaimer-box">
+                    ⚠️ {{ dosage.disclaimer_en }}<br>
+                    ⚠️ {{ dosage.disclaimer_te }}
+                </div>
+            </div>
+            {% endif %}
+
+        </div>
+
+        <!-- SEARCH BAR -->
+        <div class="search-section">
+            <form class="search-form" method="GET" action="/fertilizers">
+                <input
+                    type="text"
+                    name="search"
+                    value="{{ search_query }}"
+                    placeholder="Search fertilizer e.g. Urea, డీఏపీ, Zinc, Potash..."
+                >
+                <button type="submit">Search / వెతకండి</button>
+            </form>
+        </div>
+
+        <!-- FERTILIZER CARDS -->
+        <div class="cards">
+            {% for fert in fertilizers %}
+            <div class="card">
+                <div>
+                    <h3>{{ fert.name_en }}</h3>
+                    <div class="card-telugu">{{ fert.name_te }}</div>
+                    <div class="badge">{{ fert.npk_content }}</div>
+                    <p>{{ fert.description_en }}</p>
+                    <p style="color: #2d3748; font-style: italic;">{{ fert.description_te }}</p>
+                </div>
+
+                <div>
+                    <div class="card-tip">
+                        <strong>💡 How to Apply:</strong> {{ fert.application_tips_en }}
+                    </div>
+                    <div class="card-warning">
+                        <strong>⚠️ Precaution:</strong> {{ fert.safety_warning_en }}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <a class="back" href="/dashboard">← Back to Dashboard</a>
+
+    </div>
+
+</body>
+</html>

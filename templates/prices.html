@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgriGuide - Crop Prices & Benchmark MSP / పంట ధరలు</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f1f8f3;
+            color: #2c3e50;
+        }
+
+        nav {
+            background: #176b3a;
+            padding: 16px 30px;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        nav h2 {
+            font-size: 22px;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin-left: 20px;
+            font-weight: 500;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1100px;
+            margin: 35px auto;
+        }
+
+        h1 {
+            color: #176b3a;
+            text-align: center;
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .intro {
+            text-align: center;
+            color: #555;
+            margin-bottom: 25px;
+            font-size: 15px;
+        }
+
+        /* Disclaimer Card */
+        .disclaimer-card {
+            background: #fff8e6;
+            border-left: 5px solid #d97706;
+            border-radius: 8px;
+            padding: 16px 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+        }
+
+        .disclaimer-card h3 {
+            color: #b45309;
+            font-size: 16px;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .disclaimer-card p {
+            color: #78350f;
+            font-size: 13.5px;
+            line-height: 1.5;
+            margin-bottom: 6px;
+        }
+
+        /* Search Bar */
+        .search-section {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 25px;
+        }
+
+        .search-form {
+            display: flex;
+            width: 100%;
+            max-width: 550px;
+            gap: 10px;
+        }
+
+        .search-form input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 1.5px solid #ccc;
+            border-radius: 8px;
+            font-size: 15px;
+        }
+
+        .search-form button {
+            background: #176b3a;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .search-form button:hover {
+            background: #0f542d;
+        }
+
+        /* Table */
+        .table-responsive {
+            background: white;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+            border-radius: 12px;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: #176b3a;
+            color: white;
+            padding: 16px 14px;
+            text-align: left;
+            font-size: 14.5px;
+        }
+
+        td {
+            padding: 14px;
+            border-bottom: 1px solid #edf2f7;
+            font-size: 14.5px;
+        }
+
+        tr:hover {
+            background: #f7faf8;
+        }
+
+        .crop-name-cell {
+            font-weight: bold;
+            color: #176b3a;
+        }
+
+        .crop-name-te {
+            display: block;
+            color: #4a5568;
+            font-size: 13px;
+            font-weight: normal;
+        }
+
+        .price-badge {
+            background: #eef7f2;
+            color: #176b3a;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 15px;
+            display: inline-block;
+        }
+
+        .back {
+            display: block;
+            width: fit-content;
+            margin: 35px auto;
+            background: #176b3a;
+            color: white;
+            padding: 12px 25px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .back:hover {
+            background: #0f542d;
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav>
+        <h2>🌱 AgriGuide</h2>
+        <div>
+            <a href="/">Home</a>
+            <a href="/dashboard">Dashboard</a>
+            <a href="/recommendation">Crop Recommendation</a>
+            <a href="/chatbot">Chatbot</a>
+        </div>
+    </nav>
+
+    <div class="container">
+
+        <h1>🌾 Agricultural Commodity Prices & Reference MSP</h1>
+        <p class="intro">
+            View official Government Minimum Support Prices (MSP) and wholesale benchmark rates in English and Telugu.
+        </p>
+
+        <!-- TRANSPARENCY DISCLAIMER (Phase 15) -->
+        <div class="disclaimer-card">
+            <h3>📢 Market Data Transparency Notice / మార్కెట్ సమాచార గమనిక:</h3>
+            <p><strong>English:</strong> {{ disclaimer_en }}</p>
+            <p><strong>తెలుగు:</strong> {{ disclaimer_te }}</p>
+        </div>
+
+        <!-- SEARCH FORM -->
+        <div class="search-section">
+            <form class="search-form" method="GET" action="/prices">
+                <input
+                    type="text"
+                    name="q"
+                    value="{{ search_query }}"
+                    placeholder="Search crop in English or Telugu (e.g. Cotton, వరి, Chilli)..."
+                >
+                <button type="submit">Search / వెతకండి</button>
+            </form>
+        </div>
+
+        <!-- COMMODITIES TABLE -->
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Crop / పంట పేరు</th>
+                        <th>Category / విభాగం</th>
+                        <th>Benchmark MSP / క్వింటాల్ మద్దతు ధర</th>
+                        <th>Approx. per Kg / సుమారు కిలో ధర</th>
+                        <th>Season / కాలం</th>
+                        <th>Price Type / ధర రకం</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in prices %}
+                    <tr>
+                        <td class="crop-name-cell">
+                            {{ item.crop_en }}
+                            <span class="crop-name-te">{{ item.crop_te }}</span>
+                        </td>
+                        <td>{{ item.category }}</td>
+                        <td><span class="price-badge">{{ item.msp_per_quintal }}</span></td>
+                        <td><strong>{{ item.approx_per_kg }}</strong></td>
+                        <td>{{ item.season }}</td>
+                        <td><span style="font-size: 12px; color: #555;">{{ item.type }}</span></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <a class="back" href="/dashboard">← Back to Dashboard</a>
+
+    </div>
+
+</body>
+</html>
