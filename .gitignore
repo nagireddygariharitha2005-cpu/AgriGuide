@@ -8,3 +8,5 @@ venv/
 backup_baseline/
 *.log
 *.db
+
+*.db
