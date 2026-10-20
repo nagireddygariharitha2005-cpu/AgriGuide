@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AgriGuide - Crop Prices</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f1f8f3;
+        }
+
+        nav {
+            background: #176b3a;
+            padding: 18px;
+            color: white;
+        }
+
+        nav h2 {
+            display: inline;
+            margin-left: 30px;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin-left: 25px;
+        }
+
+        .container {
+            width: 85%;
+            margin: 40px auto;
+        }
+
+        h1 {
+            color: #176b3a;
+            text-align: center;
+        }
+
+        .intro {
+            text-align: center;
+            color: #555;
+            margin-bottom: 30px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        th {
+            background: #176b3a;
+            color: white;
+            padding: 16px;
+        }
+
+        td {
+            padding: 15px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+        }
+
+        tr:hover {
+            background: #f0f7f2;
+        }
+
+        .price {
+            color: #176b3a;
+            font-weight: bold;
+        }
+
+        .note {
+            text-align: center;
+            margin-top: 20px;
+            color: #777;
+            font-size: 14px;
+        }
+
+        .back {
+            display: block;
+            width: fit-content;
+            margin: 35px auto;
+            background: #176b3a;
+            color: white;
+            padding: 12px 25px;
+            border-radius: 8px;
+            text-decoration: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav>
+        <h2>🌱 AgriGuide</h2>
+        <a href="/">Home</a>
+        <a href="/dashboard">Dashboard</a>
+    </nav>
+
+    <div class="container">
+
+        <h1>🌾 Crop Prices</h1>
+
+        <p class="intro">
+            View sample prices of commonly used agricultural crops.
+        </p>
+
+        <table>
+            <tr>
+                <th>Crop</th>
+                <th>Price per Kg</th>
+            </tr>
+
+            <tr>
+                <td>Rice</td>
+                <td class="price">₹40</td>
+            </tr>
+
+            <tr>
+                <td>Wheat</td>
+                <td class="price">₹35</td>
+            </tr>
+
+            <tr>
+                <td>Tomato</td>
+                <td class="price">₹30</td>
+            </tr>
+
+            <tr>
+                <td>Potato</td>
+                <td class="price">₹25</td>
+            </tr>
+
+            <tr>
+                <td>Groundnut</td>
+                <td class="price">₹60</td>
+            </tr>
+        </table>
+
+        <p class="note">
+            *These are sample project prices and may not represent current market prices.
+        </p>
+
+        <a class="back" href="/dashboard">← Back to Dashboard</a>
+
+    </div>
+
+</body>
+</html>

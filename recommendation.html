@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AgriGuide - Crop Recommendation</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f1f8f3;
+        }
+
+        nav {
+            background: #176b3a;
+            padding: 18px;
+            color: white;
+        }
+
+        nav h2 {
+            display: inline;
+            margin-left: 30px;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin-left: 25px;
+        }
+
+        .container {
+            width: 500px;
+            max-width: 90%;
+            margin: 45px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            color: #176b3a;
+            text-align: center;
+        }
+
+        .intro {
+            text-align: center;
+            color: #666;
+        }
+
+        label {
+            display: block;
+            margin-top: 20px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        select {
+            width: 100%;
+            padding: 12px;
+            margin-top: 8px;
+            border: 1px solid #ccc;
+            border-radius: 7px;
+            font-size: 15px;
+        }
+
+        button {
+            width: 100%;
+            margin-top: 25px;
+            padding: 13px;
+            background: #176b3a;
+            color: white;
+            border: none;
+            border-radius: 7px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #0f542d;
+        }
+
+        .result {
+            margin-top: 25px;
+            padding: 18px;
+            background: #e9f6ed;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .result h2 {
+            color: #176b3a;
+            margin-bottom: 8px;
+        }
+
+        .back {
+            display: block;
+            width: fit-content;
+            margin: 30px auto 0;
+            background: #176b3a;
+            color: white;
+            padding: 11px 22px;
+            border-radius: 7px;
+            text-decoration: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav>
+        <h2>🌱 AgriGuide</h2>
+        <a href="/">Home</a>
+        <a href="/dashboard">Dashboard</a>
+    </nav>
+
+    <div class="container">
+
+        <h1>🌾 Crop Recommendation</h1>
+
+        <p class="intro">
+            Select soil, season and water availability to get a sample crop recommendation.
+        </p>
+
+        <form method="POST">
+
+            <label>🌱 Soil Type</label>
+
+            <select name="soil" required>
+                <option value="">Select Soil Type</option>
+                <option value="black">Black Soil</option>
+                <option value="red">Red Soil</option>
+                <option value="alluvial">Alluvial Soil</option>
+                <option value="sandy">Sandy Soil</option>
+            </select>
+
+
+            <label>☀️ Season</label>
+
+            <select name="season" required>
+                <option value="">Select Season</option>
+                <option value="kharif">Kharif</option>
+                <option value="rabi">Rabi</option>
+                <option value="summer">Summer</option>
+            </select>
+
+
+            <label>💧 Water Availability</label>
+
+            <select name="water" required>
+                <option value="">Select Water Availability</option>
+                <option value="high">High</option>
+                <option value="medium">Medium</option>
+                <option value="low">Low</option>
+            </select>
+
+
+            <button type="submit">
+                🌾 Get Crop Recommendation
+            </button>
+
+        </form>
+
+
+        {% if recommendation %}
+
+        <div class="result">
+
+            <h2>Recommended Crop</h2>
+
+            <p>
+                Based on the selected conditions:
+            </p>
+
+            <h3>🌱 {{ recommendation }}</h3>
+
+        </div>
+
+        {% endif %}
+
+
+        <a class="back" href="/dashboard">
+            ← Back to Dashboard
+        </a>
+
+    </div>
+
+</body>
+</html>

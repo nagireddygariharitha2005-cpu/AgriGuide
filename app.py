@@ -36,8 +36,10 @@ logger = logging.getLogger("agriguide")
 # DATABASE SETUP & MIGRATION
 # =========================
 
+DB_PATH = "/tmp/agriguide.db" if os.environ.get("VERCEL") else os.path.join(os.path.dirname(os.path.abspath(__file__)), "agriguide.db")
+
 def init_db():
-    conn = sqlite3.connect("agriguide.db")
+    conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
 
     cursor.execute("""
@@ -76,7 +78,7 @@ def login():
             flash("Please enter both email and password.", "error")
             return render_template("login.html")
 
-        conn = sqlite3.connect("agriguide.db")
+        conn = sqlite3.connect(DB_PATH)
         cursor = conn.cursor()
 
         cursor.execute("SELECT id, name, email, password FROM users WHERE email = ?", (email,))
@@ -144,7 +146,7 @@ def register():
         # Phase 11: Hash password with Werkzeug before storing
         hashed_password = generate_password_hash(password)
 
-        conn = sqlite3.connect("agriguide.db")
+        conn = sqlite3.connect(DB_PATH)
         cursor = conn.cursor()
 
         try:
@@ -346,7 +348,7 @@ def recommendation():
         if request.headers.get("Accept") == "application/json" or request.is_json:
             return jsonify(rec_data)
 
-    return render_template(S
+    return render_template(
         "recommendation.html",
         recommendation=rec_data,
         inputs=user_inputs

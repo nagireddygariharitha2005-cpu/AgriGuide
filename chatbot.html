@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>AgriGuide Farmer Chatbot</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #eef8f0;
+        }
+
+        .container {
+            width: 92%;
+            max-width: 1200px;
+            margin: auto;
+            padding: 25px 0;
+        }
+
+        h1 {
+            text-align: center;
+            color: #176b3a;
+            margin-bottom: 25px;
+        }
+
+        .language-box {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .language-box label {
+            font-size: 20px;
+            font-weight: bold;
+            color: #176b3a;
+            margin-right: 12px;
+        }
+
+        #language {
+            padding: 12px 18px;
+            font-size: 17px;
+            border-radius: 8px;
+            border: 1px solid #aaa;
+        }
+
+        .chat-box {
+            background: white;
+            border: 1px solid #ccc;
+            border-radius: 12px;
+            padding: 20px;
+            min-height: 450px;
+            max-height: 450px;
+            overflow-y: auto;
+        }
+
+        .message {
+            padding: 14px;
+            margin-bottom: 14px;
+            border-radius: 12px;
+            font-size: 18px;
+            line-height: 1.5;
+        }
+
+        .bot {
+            background: #d8f3d8;
+        }
+
+        .user {
+            background: #d7e7ff;
+            text-align: right;
+        }
+
+        .input-area {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        #messageInput {
+            flex: 1;
+            padding: 16px;
+            font-size: 17px;
+            border: 1px solid #aaa;
+            border-radius: 8px;
+        }
+
+        button {
+            border: none;
+            border-radius: 8px;
+            padding: 14px 20px;
+            font-size: 17px;
+            cursor: pointer;
+        }
+
+        #sendButton {
+            background: #176b3a;
+            color: white;
+        }
+
+        #speakButton {
+            background: #176b3a;
+            color: white;
+        }
+
+        #imageButton {
+            background: #7048b8;
+            color: white;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        #status {
+            margin-top: 15px;
+            color: #555;
+            font-size: 16px;
+        }
+
+        #imageInput {
+            display: none;
+        }
+
+        @media (max-width: 700px) {
+            .input-area {
+                flex-direction: column;
+            }
+
+            .buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+
+<body>
+
+<div class="container">
+
+    <h1>🌾 AgriGuide Farmer Chatbot</h1>
+
+
+    <!-- LANGUAGE -->
+
+    <div class="language-box">
+
+        <label for="language">
+            Choose Language:
+        </label>
+
+        <select id="language">
+
+            <option value="te-IN">
+                తెలుగు (Telugu)
+            </option>
+
+            <option value="en-US">
+                English
+            </option>
+
+        </select>
+
+    </div>
+
+
+    <!-- CHAT -->
+
+    <div id="chatBox" class="chat-box">
+
+        <div class="message bot">
+            నమస్కారం రైతు! 👋<br>
+            మీ వ్యవసాయ ప్రశ్నను టైప్ చేయండి లేదా మాట్లాడండి.
+        </div>
+
+    </div>
+
+
+    <!-- TEXT INPUT -->
+
+    <div class="input-area">
+
+        <input
+            type="text"
+            id="messageInput"
+            placeholder="మీ వ్యవసాయ ప్రశ్నను టైప్ చేయండి..."
+        >
+
+        <button id="sendButton" onclick="sendMessage()">
+            Send
+        </button>
+
+    </div>
+
+
+    <!-- BUTTONS -->
+
+    <div class="buttons">
+
+        <button id="speakButton" onclick="startVoice()">
+            🎤 Speak
+        </button>
+
+        <button id="imageButton" onclick="selectImage()">
+            🖼️ Upload Image
+        </button>
+
+    </div>
+
+
+    <input
+        type="file"
+        id="imageInput"
+        accept="image/*"
+        onchange="imageSelected()"
+    >
+
+
+    <div id="status"></div>
+
+</div>
+
+
+<script>
+
+    const languageSelect =
+        document.getElementById("language");
+
+    const messageInput =
+        document.getElementById("messageInput");
+
+    const chatBox =
+        document.getElementById("chatBox");
+
+    const statusText =
+        document.getElementById("status");
+
+
+    // =========================
+    // LANGUAGE CHANGE
+    // =========================
+
+    languageSelect.addEventListener("change", function () {
+
+        if (languageSelect.value === "te-IN") {
+
+            messageInput.placeholder =
+                "మీ వ్యవసాయ ప్రశ్నను టైప్ చేయండి...";
+
+        } else {
+
+            messageInput.placeholder =
+                "Type your farming question...";
+
+        }
+
+    });
+
+
+    // =========================
+    // SEND MESSAGE
+    // =========================
+
+    async function sendMessage() {
+
+        const message =
+            messageInput.value.trim();
+
+        if (message === "") {
+            return;
+        }
+
+
+        addMessage(message, "user");
+
+        messageInput.value = "";
+
+        statusText.innerText =
+            "Thinking...";
+
+
+        try {
+
+            const response =
+                await fetch("/chat", {
+
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body: JSON.stringify({
+                        message: message
+                    })
+
+                });
+
+
+            const data =
+                await response.json();
+
+
+            addMessage(
+                data.reply,
+                "bot"
+            );
+
+
+            speakReply(data.reply);
+
+            statusText.innerText = "";
+
+
+        } catch (error) {
+
+            console.error(error);
+
+            addMessage(
+                "Sorry, something went wrong.",
+                "bot"
+            );
+
+            statusText.innerText =
+                "Unable to connect to chatbot.";
+
+        }
+
+    }
+
+
+    // =========================
+    // ADD MESSAGE
+    // =========================
+
+    function addMessage(text, type) {
+
+        const div =
+            document.createElement("div");
+
+        div.className =
+            "message " + type;
+
+        div.innerText = text;
+
+        chatBox.appendChild(div);
+
+        chatBox.scrollTop =
+            chatBox.scrollHeight;
+
+    }
+
+
+    // =========================
+    // ENTER KEY
+    // =========================
+
+    messageInput.addEventListener(
+        "keydown",
+        function(event) {
+
+            if (event.key === "Enter") {
+
+                sendMessage();
+
+            }
+
+        }
+    );
+
+
+    // =========================
+    // VOICE INPUT
+    // =========================
+
+    function startVoice() {
+
+        const SpeechRecognition =
+            window.SpeechRecognition ||
+            window.webkitSpeechRecognition;
+
+
+        if (!SpeechRecognition) {
+
+            statusText.innerText =
+                "Voice recognition is not supported. Please use Google Chrome.";
+
+            return;
+        }
+
+
+        const recognition =
+            new SpeechRecognition();
+
+
+        recognition.lang =
+            languageSelect.value;
+
+        recognition.continuous = false;
+
+        recognition.interimResults = false;
+
+        recognition.maxAlternatives = 1;
+
+
+        if (languageSelect.value === "te-IN") {
+
+            statusText.innerText =
+                "🎤 తెలుగు వినబడుతోంది... మాట్లాడండి.";
+
+        } else {
+
+            statusText.innerText =
+                "🎤 Listening... Speak now.";
+
+        }
+
+
+        recognition.start();
+
+
+        recognition.onresult =
+            function(event) {
+
+                const transcript =
+                    event.results[0][0].transcript;
+
+                messageInput.value =
+                    transcript;
+
+                statusText.innerText =
+                    "Voice received.";
+
+                sendMessage();
+
+            };
+
+
+        recognition.onerror =
+            function(event) {
+
+                console.log(
+                    "Voice error:",
+                    event.error
+                );
+
+
+                if (event.error === "not-allowed") {
+
+                    statusText.innerText =
+                        "Microphone permission is blocked in Chrome.";
+
+                }
+
+                else if (event.error === "no-speech") {
+
+                    statusText.innerText =
+                        "Could not hear your voice. Please speak closer to the microphone and try again.";
+
+                }
+
+                else {
+
+                    statusText.innerText =
+                        "Voice error: " + event.error;
+
+                }
+
+            };
+
+
+        recognition.onend =
+            function() {
+
+                setTimeout(function() {
+
+                    if (
+                        statusText.innerText.includes(
+                            "Listening"
+                        ) ||
+                        statusText.innerText.includes(
+                            "తెలుగు"
+                        )
+                    ) {
+
+                        statusText.innerText = "";
+
+                    }
+
+                }, 500);
+
+            };
+
+    }
+
+
+    // =========================
+    // VOICE OUTPUT
+    // =========================
+
+    function speakReply(text) {
+
+        if (!("speechSynthesis" in window)) {
+            return;
+        }
+
+
+        window.speechSynthesis.cancel();
+
+
+        const speech =
+            new SpeechSynthesisUtterance(text);
+
+
+        speech.lang =
+            languageSelect.value;
+
+        speech.rate = 0.9;
+
+        speech.pitch = 1;
+
+
+        window.speechSynthesis.speak(
+            speech
+        );
+
+    }
+
+
+    // =========================
+    // IMAGE UPLOAD
+    // =========================
+
+    function selectImage() {
+
+        document
+            .getElementById("imageInput")
+            .click();
+
+    }
+
+
+    function imageSelected() {
+
+        const file =
+            document
+                .getElementById("imageInput")
+                .files[0];
+
+
+        if (file) {
+
+            statusText.innerText =
+                "Image selected: " + file.name;
+
+        }
+
+    }
+
+</script>
+
+</body>
+
+</html>

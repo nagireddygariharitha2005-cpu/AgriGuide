@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AgriGuide - Fertilizers</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f1f8f3;
+        }
+
+        nav {
+            background: #176b3a;
+            padding: 18px;
+            color: white;
+        }
+
+        nav h2 {
+            display: inline;
+            margin-left: 30px;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin-left: 25px;
+        }
+
+        .container {
+            width: 85%;
+            margin: 40px auto;
+        }
+
+        h1 {
+            color: #176b3a;
+            text-align: center;
+        }
+
+        .intro {
+            text-align: center;
+            color: #555;
+        }
+
+        .cards {
+            display: flex;
+            gap: 25px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 35px;
+        }
+
+        .card {
+            background: white;
+            width: 260px;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .card h2 {
+            color: #176b3a;
+        }
+
+        .card p {
+            color: #555;
+            line-height: 1.6;
+        }
+
+        .back {
+            display: block;
+            width: fit-content;
+            margin: 40px auto;
+            background: #176b3a;
+            color: white;
+            padding: 12px 25px;
+            border-radius: 8px;
+            text-decoration: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav>
+        <h2>🌱 AgriGuide</h2>
+        <a href="/">Home</a>
+        <a href="/dashboard">Dashboard</a>
+    </nav>
+
+    <div class="container">
+
+        <h1>🌾 Fertilizer Information</h1>
+
+        <p class="intro">
+            Learn about common fertilizers and their uses in farming.
+        </p>
+
+        <div class="cards">
+
+            <div class="card">
+                <h2>🌱 Urea</h2>
+                <p>
+                    Urea is a nitrogen fertilizer commonly used to support
+                    healthy plant growth.
+                </p>
+            </div>
+
+            <div class="card">
+                <h2>🌾 DAP</h2>
+                <p>
+                    DAP provides nitrogen and phosphorus, which are important
+                    nutrients for crops.
+                </p>
+            </div>
+
+            <div class="card">
+                <h2>🍃 NPK</h2>
+                <p>
+                    NPK fertilizers contain nitrogen, phosphorus and potassium
+                    in different proportions.
+                </p>
+            </div>
+
+            <div class="card">
+                <h2>🌿 Organic Fertilizer</h2>
+                <p>
+                    Organic fertilizers can add nutrients and organic matter
+                    to the soil.
+                </p>
+            </div>
+
+        </div>
+
+        <a class="back" href="/dashboard">← Back to Dashboard</a>
+
+    </div>
+
+</body>
+</html>
