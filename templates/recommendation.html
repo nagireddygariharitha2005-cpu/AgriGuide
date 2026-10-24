@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -27,13 +27,12 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
 
         nav h2 {
-            display: flex;
-            align-items: center;
-            gap: 8px;
             font-size: 22px;
         }
 
@@ -47,20 +46,6 @@
 
         nav a:hover {
             text-decoration: underline;
-        }
-
-        .lang-switch {
-            background: #0f542d;
-            border: 1px solid #38a169;
-            color: white;
-            padding: 6px 14px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 14px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
         }
 
         .main-container {
@@ -112,17 +97,18 @@
             font-size: 14px;
         }
 
-        select, input[type="text"] {
+        select,
+        input[type="text"] {
             width: 100%;
             padding: 12px 14px;
             border: 1.5px solid #cbd5e0;
             border-radius: 8px;
             font-size: 15px;
             background: #fafcfb;
-            transition: border-color 0.2s;
         }
 
-        select:focus, input[type="text"]:focus {
+        select:focus,
+        input[type="text"]:focus {
             outline: none;
             border-color: #176b3a;
             background: white;
@@ -133,16 +119,14 @@
         }
 
         .voice-icon-btn {
-            position: absolute;
-            right: 10px;
-            top: 38px;
             background: #176b3a;
             color: white;
             border: none;
-            padding: 6px 12px;
+            padding: 8px 12px;
             border-radius: 6px;
             cursor: pointer;
             font-size: 13px;
+            margin-top: 8px;
         }
 
         .submit-btn {
@@ -155,19 +139,13 @@
             font-size: 17px;
             font-weight: bold;
             cursor: pointer;
-            transition: background 0.2s;
             margin-top: 10px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 8px;
         }
 
         .submit-btn:hover {
             background: #0f542d;
         }
 
-        /* Results Styling */
         .results-section {
             margin-top: 35px;
         }
@@ -203,7 +181,6 @@
             margin-bottom: 25px;
             border: 1px solid #e2e8f0;
             overflow: hidden;
-            transition: transform 0.2s;
         }
 
         .crop-card-header {
@@ -221,6 +198,7 @@
             display: flex;
             align-items: baseline;
             gap: 12px;
+            flex-wrap: wrap;
         }
 
         .crop-title-en {
@@ -250,7 +228,7 @@
 
         .metrics-bar {
             display: flex;
-            gap: 20px;
+            gap: 12px;
             margin-bottom: 18px;
             flex-wrap: wrap;
         }
@@ -261,7 +239,6 @@
             border-radius: 8px;
             font-size: 14px;
             color: #176b3a;
-            font-weight: 500;
         }
 
         .description-box {
@@ -275,7 +252,7 @@
 
         .details-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 16px;
             margin-top: 15px;
         }
@@ -291,15 +268,13 @@
             font-size: 14px;
             color: #176b3a;
             margin-bottom: 6px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
         }
 
         .detail-card p {
             font-size: 13.5px;
             color: #555;
             line-height: 1.5;
+            overflow-wrap: anywhere;
         }
 
         .precautions-card {
@@ -359,19 +334,23 @@
             .grid-2 {
                 grid-template-columns: 1fr;
             }
-            .crop-names {
-                flex-direction: column;
-                gap: 4px;
-            }
+
             nav {
                 padding: 14px 18px;
+            }
+
+            .form-card {
+                padding: 20px 16px;
+            }
+
+            .crop-body {
+                padding: 18px;
             }
         }
     </style>
 </head>
 
 <body>
-
     <nav>
         <h2>🌱 AgriGuide</h2>
         <div>
@@ -382,23 +361,20 @@
     </nav>
 
     <div class="main-container">
-
         <div class="form-card">
-
             <div class="form-header">
                 <h1>🌾 Smart Crop Recommendation / స్మార్ట్ పంట సిఫార్సు</h1>
                 <p>
-                    Select your field conditions or type in English, Telugu (తెలుగు), or Tanglish to receive verified agronomic recommendations.
+                    Select your field conditions or type in English, Telugu, or Tanglish
+                    to receive crop recommendations.
                 </p>
             </div>
 
             <form method="POST" action="/recommendation">
-
-                <!-- Language preference -->
-                <div style="display: flex; justify-content: flex-end; margin-bottom: 15px;">
-                    <label style="margin: 0; display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px; color: #555;">
+                <div style="display:flex; justify-content:flex-end; margin-bottom:15px;">
+                    <label style="margin:0; display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
                         Output Language / సమాధాన భాష:
-                        <select name="language" style="width: auto; padding: 4px 10px; font-size: 13px;">
+                        <select name="language" style="width:auto; padding:6px 10px;">
                             <option value="te" {% if inputs.language == 'te' %}selected{% endif %}>తెలుగు (Telugu)</option>
                             <option value="en" {% if inputs.language == 'en' %}selected{% endif %}>English</option>
                         </select>
@@ -406,48 +382,39 @@
                 </div>
 
                 <div class="grid-2">
-
-                    <!-- Soil Type -->
                     <div class="form-group">
                         <label>🌱 Soil Type / నేల రకం *</label>
                         <select name="soil" required>
-                            <option value="">-- Select Soil Type / నేలను ఎంచుకోండి --</option>
-                            <option value="black" {% if inputs.soil == 'black' %}selected{% endif %}>Black Soil / నల్లరేగడి నేల (రేగడి)</option>
-                            <option value="red" {% if inputs.soil == 'red' %}selected{% endif %}>Red Soil / ఎర్ర నేల (చల్కా భూమి)</option>
+                            <option value="">-- Select Soil Type --</option>
+                            <option value="black" {% if inputs.soil == 'black' %}selected{% endif %}>Black Soil / నల్లరేగడి నేల</option>
+                            <option value="red" {% if inputs.soil == 'red' %}selected{% endif %}>Red Soil / ఎర్ర నేల</option>
                             <option value="alluvial" {% if inputs.soil == 'alluvial' %}selected{% endif %}>Alluvial Soil / ఒండ్రు నేల</option>
                             <option value="sandy" {% if inputs.soil == 'sandy' %}selected{% endif %}>Sandy Soil / ఇసుక నేల</option>
                             <option value="clay" {% if inputs.soil == 'clay' %}selected{% endif %}>Clay Soil / బంకమట్టి నేల</option>
-                            <option value="loamy" {% if inputs.soil == 'loamy' %}selected{% endif %}>Loamy Soil / గరప నేల (దుబ్బ)</option>
+                            <option value="loamy" {% if inputs.soil == 'loamy' %}selected{% endif %}>Loamy Soil / గరప నేల</option>
                         </select>
                     </div>
 
-                    <!-- Season -->
                     <div class="form-group">
                         <label>☀️ Season / కాలం *</label>
                         <select name="season" required>
-                            <option value="">-- Select Season / సీజన్ ఎంచుకోండి --</option>
-                            <option value="kharif" {% if inputs.season == 'kharif' %}selected{% endif %}>Kharif (Monsoon) / ఖరీఫ్ (వర్షాకాలం)</option>
-                            <option value="rabi" {% if inputs.season == 'rabi' %}selected{% endif %}>Rabi (Winter) / రబీ (శీతాకాలం)</option>
-                            <option value="summer" {% if inputs.season == 'summer' %}selected{% endif %}>Summer (Zaid) / ఎండాకాలం (వేసవి)</option>
+                            <option value="">-- Select Season --</option>
+                            <option value="kharif" {% if inputs.season == 'kharif' %}selected{% endif %}>Kharif / ఖరీఫ్</option>
+                            <option value="rabi" {% if inputs.season == 'rabi' %}selected{% endif %}>Rabi / రబీ</option>
+                            <option value="summer" {% if inputs.season == 'summer' %}selected{% endif %}>Summer / వేసవి</option>
                         </select>
                     </div>
 
-                </div>
-
-                <div class="grid-2">
-
-                    <!-- Water Availability -->
                     <div class="form-group">
                         <label>💧 Water Availability / నీటి లభ్యత *</label>
                         <select name="water" required>
-                            <option value="">-- Select Water / నీటి వసతి ఎంచుకోండి --</option>
-                            <option value="high" {% if inputs.water == 'high' %}selected{% endif %}>High (Canal / Borewell) / ఎక్కువ (కాలువ / నిరంతర బోరు)</option>
-                            <option value="medium" {% if inputs.water == 'medium' %}selected{% endif %}>Medium (Borewell / Tanks) / మధ్యస్థం (బోరు / చెరువులు)</option>
-                            <option value="low" {% if inputs.water == 'low' %}selected{% endif %}>Low (Rainfed / Dryland) / తక్కువ (వర్షాధార మెట్ట భూములు)</option>
+                            <option value="">-- Select Water Availability --</option>
+                            <option value="high" {% if inputs.water == 'high' %}selected{% endif %}>High / ఎక్కువ</option>
+                            <option value="medium" {% if inputs.water == 'medium' %}selected{% endif %}>Medium / మధ్యస్థం</option>
+                            <option value="low" {% if inputs.water == 'low' %}selected{% endif %}>Low / తక్కువ</option>
                         </select>
                     </div>
 
-                    <!-- Crop Preference -->
                     <div class="form-group">
                         <label>🌾 Specific Crop Interest / ప్రాధాన్యత పంట (Optional)</label>
                         <input
@@ -457,39 +424,31 @@
                             placeholder="e.g. Cotton, వరి, Groundnut, Mirchi"
                         >
                     </div>
-
                 </div>
 
-                <!-- Free Text / Voice Query -->
                 <div class="form-group query-box">
-                    <label>📝 Your Farming Question or Field Notes / మీ ప్రశ్న లేదా ఇతర వివరాలు (Optional)</label>
+                    <label>Your Farming Question / మీ వ్యవసాయ ప్రశ్న (Optional)</label>
                     <input
                         type="text"
                         id="farmerNotesInput"
                         name="farmer_notes"
                         value="{{ inputs.farmer_notes }}"
-                        placeholder="e.g. మా పొలంలో నీటి నిల్వ సమస్య ఉంది, ఏ పంట వేయాలి? / Which crop is best for low water?"
+                        placeholder="e.g. Which crop is suitable for low water?"
                     >
-                    <button type="button" class="voice-icon-btn" onclick="startVoiceInput()">🎤 Speak</button>
-                    <div id="voiceStatus" style="display:none; margin-top:6px; font-size:13px; color:#176b3a; font-weight:bold;"></div>
+                    <button type="button" class="voice-icon-btn" onclick="startVoiceInput()">🎤 Speak / మాట్లాడండి</button>
+                    <p id="voiceStatus" role="status" style="display:none; margin-top:6px; font-size:13px; color:#176b3a;"></p>
                 </div>
 
                 <button type="submit" class="submit-btn">
-                    🌾 Get Dynamic Crop Recommendation / పంట సిఫార్సును పొందండి
+                    🌾 Get Crop Recommendation / పంట సిఫార్సు పొందండి
                 </button>
-
             </form>
-
         </div>
 
-
-        <!-- RESULTS SECTION -->
         {% if recommendation and recommendation.primary_crops %}
-
         <div class="results-section">
-
             <div class="results-header">
-                <h2>🌾 Recommended Crops / సిఫార్సు చేయబడిన పంటలు</h2>
+                <h2>🌾 Recommended Crops / సిఫార్సు చేసిన పంటలు</h2>
                 {% if recommendation.source %}
                 <span class="source-badge">Engine: {{ recommendation.source }}</span>
                 {% endif %}
@@ -497,19 +456,15 @@
 
             {% for crop in recommendation.primary_crops %}
             <div class="crop-card">
-
                 <div class="crop-card-header">
                     <div class="crop-names">
                         <span class="crop-title-en">{{ crop.name_en }}</span>
                         <span class="crop-title-te">({{ crop.name_te }})</span>
                     </div>
-                    <div class="suitability-pill">
-                        🌱 {{ crop.suitability_score }}% Suitability
-                    </div>
+                    <div class="suitability-pill">🌱 {{ crop.suitability_score }}% Suitability</div>
                 </div>
 
                 <div class="crop-body">
-
                     <div class="metrics-bar">
                         <div class="metric-item">⏱️ Duration: <strong>{{ crop.growing_duration }}</strong></div>
                         <div class="metric-item">📊 Expected Yield: <strong>{{ crop.expected_yield }}</strong></div>
@@ -524,32 +479,26 @@
                     </div>
 
                     <div class="details-grid">
-
                         <div class="detail-card">
-                            <h4>🌍 Soil Preparation & Health / నేల యాజమాన్యం</h4>
+                            <h4>🌍 Soil Preparation / నేల తయారీ</h4>
                             <p>{{ crop.soil_health_tips }}</p>
                         </div>
-
                         <div class="detail-card">
-                            <h4>🌱 Sowing & Seed Guidance / విత్తే విధానం</h4>
+                            <h4>🌱 Sowing Guidance / విత్తే విధానం</h4>
                             <p>{{ crop.sowing_guidance }}</p>
                         </div>
-
                         <div class="detail-card">
                             <h4>🧪 Fertilizer Schedule / ఎరువుల ప్రణాళిక</h4>
                             <p>{{ crop.fertilizer_schedule }}</p>
                         </div>
-
                         <div class="detail-card">
                             <h4>💧 Water & Irrigation / నీటి యాజమాన్యం</h4>
                             <p>{{ crop.irrigation_advice }}</p>
                         </div>
-
                         <div class="detail-card">
-                            <h4>🛡️ Pests & Disease Management / సస్యరక్షణ</h4>
+                            <h4>🛡️ Pest & Disease Management / సస్యరక్షణ</h4>
                             <p>{{ crop.diseases_and_pests }}</p>
                         </div>
-
                     </div>
 
                     <div class="precautions-card">
@@ -562,16 +511,13 @@
                             {% endif %}
                         </p>
                     </div>
-
                 </div>
-
             </div>
             {% endfor %}
 
-            <!-- General Seasonal Advice -->
             {% if recommendation.general_advice_en or recommendation.general_advice_te %}
             <div class="advice-banner">
-                <h3>💡 Agronomist Seasonal Advice / నిపుణుల సలహా</h3>
+                <h3>💡 Seasonal Advice / కాలానుగుణ సలహా</h3>
                 <p>
                     {% if inputs.language == 'te' %}
                         {{ recommendation.general_advice_te }}
@@ -579,8 +525,9 @@
                         {{ recommendation.general_advice_en }}
                     {% endif %}
                 </p>
+
                 {% if recommendation.warnings_te or recommendation.warnings_en %}
-                <p style="margin-top: 8px; font-weight: bold; color: #856404;">
+                <p style="margin-top:8px; font-weight:bold; color:#856404;">
                     {% if inputs.language == 'te' %}
                         {{ recommendation.warnings_te }}
                     {% else %}
@@ -590,303 +537,85 @@
                 {% endif %}
             </div>
             {% endif %}
-
         </div>
-
         {% endif %}
 
-        <div style="text-align: center;">
+        <div style="text-align:center;">
             <a class="back-link" href="/dashboard">← Back to Dashboard</a>
         </div>
-
     </div>
 
     <script>
-        async function startVoiceInput() {
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        function startVoiceInput() {
+            const SpeechRecognition =
+                window.SpeechRecognition || window.webkitSpeechRecognition;
             const voiceStatus = document.getElementById("voiceStatus");
             const inputField = document.getElementById("farmerNotesInput");
+            const languageSelect = document.querySelector('select[name="language"]');
 
-            if (!SpeechRecognition) {
-                if (voiceStatus) {
-                    voiceStatus.innerText = "Voice input is not supported in this browser. Please use Google Chrome or Microsoft Edge.";
-                    voiceStatus.style.display = "block";
-                }
-                return;
+            function showStatus(message) {
+                voiceStatus.textContent = message;
+                voiceStatus.style.display = "block";
             }
 
-            // Warm up microphone permission via getUserMedia
-            try {
-                if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                    stream.getTracks().forEach(t => t.stop());
-                }
-            } catch (permErr) {
-                if (voiceStatus) {
-                    voiceStatus.innerText = "Microphone permission is required. Please allow microphone access in your browser address bar.";
-                    voiceStatus.style.display = "block";
-                }
+            if (!SpeechRecognition) {
+                showStatus("Voice input is not supported in this browser. Please type your question.");
                 return;
             }
 
             const recognition = new SpeechRecognition();
-            const langSelect = document.querySelector('select[name="language"]');
-            recognition.lang = (langSelect && langSelect.value === 'en') ? 'en-IN' : 'te-IN';
+            recognition.lang =
+                languageSelect && languageSelect.value === "en" ? "en-IN" : "te-IN";
             recognition.continuous = false;
             recognition.interimResults = true;
 
             const originalPlaceholder = inputField.placeholder;
-            inputField.placeholder = "🎤 Listening... మాట్లాడండి...";
-            if (voiceStatus) {
-                voiceStatus.innerText = "🎤 Listening... మాట్లాడండి...";
-                voiceStatus.style.display = "block";
-            }
+            inputField.placeholder = "Listening... మాట్లాడండి...";
+            showStatus("🎤 Listening... మాట్లాడండి...");
 
             recognition.onresult = function(event) {
-                let trans = "";
-                for (let i = event.resultIndex; i < event.results.length; ++i) {
-                    trans += event.results[i][0].transcript;
+                let transcript = "";
+
+                for (let i = event.resultIndex; i < event.results.length; i++) {
+                    transcript += event.results[i][0].transcript;
                 }
-                if (trans.trim()) {
-                    inputField.value = trans.trim();
+
+                if (transcript.trim()) {
+                    inputField.value = transcript.trim();
                 }
-                if (event.results[0] && event.results[0].isFinal) {
+
+                const lastResult = event.results[event.results.length - 1];
+
+                if (lastResult && lastResult.isFinal) {
                     inputField.placeholder = originalPlaceholder;
-                    if (voiceStatus) {
-                        voiceStatus.innerText = "✅ Voice input captured.";
-                        setTimeout(() => { voiceStatus.style.display = "none"; }, 2500);
-                    }
+                    showStatus("Voice input captured. You can now submit the form.");
                 }
             };
 
-            recognition.onerror = async function(event) {
+            recognition.onerror = function(event) {
                 inputField.placeholder = originalPlaceholder;
-                if (!voiceStatus) return;
 
-                if (event && (event.error === 'not-allowed' || event.error === 'service-not-allowed')) {
-                    voiceStatus.innerText = "⚠️ Microphone permission is required. Please allow access in address bar.";
-                } else if (event && event.error === 'no-speech') {
-                    voiceStatus.innerText = "ℹ️ No speech detected. Please speak closer to microphone.";
-                } else if (event && event.error === 'network') {
-                    let isBrave = false;
-                    if (navigator.brave && typeof navigator.brave.isBrave === 'function') {
-                        try { isBrave = await navigator.brave.isBrave(); } catch (e) {}
-                    }
-                    if (isBrave) {
-                        voiceStatus.innerHTML = "⚠️ Brave Browser blocks Google Speech by default. Please use <strong>Google Chrome</strong> or enable 'Use Google services for voice recognition' in brave://settings/privacy.";
-                    } else {
-                        voiceStatus.innerText = "⚠️ Network issue connecting to speech service. Please use Google Chrome.";
-                    }
+                if (event.error === "not-allowed" ||
+                    event.error === "service-not-allowed") {
+                    showStatus("Microphone access was denied. Check your browser permissions.");
+                } else if (event.error === "no-speech") {
+                    showStatus("No speech detected. Please try again or type your question.");
                 } else {
-                    voiceStatus.innerText = `⚠️ Voice error (${event ? event.error : 'unknown'}). Please type your notes.`;
+                    showStatus("Voice input is temporarily unavailable. Please type your question.");
                 }
             };
 
             recognition.onend = function() {
                 inputField.placeholder = originalPlaceholder;
-                if (voiceStatus && voiceStatus.innerText.includes("Listening")) {
-                    voiceStatus.style.display = "none";
-                }
             };
 
             try {
                 recognition.start();
-            } catch (e) {
-                if (voiceStatus) {
-                    voiceStatus.innerText = "⚠️ Could not start microphone. Please try again.";
-                }
+            } catch (error) {
+                inputField.placeholder = originalPlaceholder;
+                showStatus("Could not start voice input. Please try again or type your question.");
             }
         }
     </script>
-
 </body>
-=======
-<!DOCTYPE html>
-<html>
-<head>
-    <title>AgriGuide - Crop Recommendation</title>
-
-    <style>
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: #f1f8f3;
-        }
-
-        nav {
-            background: #176b3a;
-            padding: 18px;
-            color: white;
-        }
-
-        nav h2 {
-            display: inline;
-            margin-left: 30px;
-        }
-
-        nav a {
-            color: white;
-            text-decoration: none;
-            margin-left: 25px;
-        }
-
-        .container {
-            width: 500px;
-            max-width: 90%;
-            margin: 45px auto;
-            background: white;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        }
-
-        h1 {
-            color: #176b3a;
-            text-align: center;
-        }
-
-        .intro {
-            text-align: center;
-            color: #666;
-        }
-
-        label {
-            display: block;
-            margin-top: 20px;
-            font-weight: bold;
-            color: #333;
-        }
-
-        select {
-            width: 100%;
-            padding: 12px;
-            margin-top: 8px;
-            border: 1px solid #ccc;
-            border-radius: 7px;
-            font-size: 15px;
-        }
-
-        button {
-            width: 100%;
-            margin-top: 25px;
-            padding: 13px;
-            background: #176b3a;
-            color: white;
-            border: none;
-            border-radius: 7px;
-            font-size: 16px;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background: #0f542d;
-        }
-
-        .result {
-            margin-top: 25px;
-            padding: 18px;
-            background: #e9f6ed;
-            border-radius: 10px;
-            text-align: center;
-        }
-
-        .result h2 {
-            color: #176b3a;
-            margin-bottom: 8px;
-        }
-
-        .back {
-            display: block;
-            width: fit-content;
-            margin: 30px auto 0;
-            background: #176b3a;
-            color: white;
-            padding: 11px 22px;
-            border-radius: 7px;
-            text-decoration: none;
-        }
-    </style>
-</head>
-
-<body>
-
-    <nav>
-        <h2>🌱 AgriGuide</h2>
-        <a href="/">Home</a>
-        <a href="/dashboard">Dashboard</a>
-    </nav>
-
-    <div class="container">
-
-        <h1>🌾 Crop Recommendation</h1>
-
-        <p class="intro">
-            Select soil, season and water availability to get a sample crop recommendation.
-        </p>
-
-        <form method="POST">
-
-            <label>🌱 Soil Type</label>
-
-            <select name="soil" required>
-                <option value="">Select Soil Type</option>
-                <option value="black">Black Soil</option>
-                <option value="red">Red Soil</option>
-                <option value="alluvial">Alluvial Soil</option>
-                <option value="sandy">Sandy Soil</option>
-            </select>
-
-
-            <label>☀️ Season</label>
-
-            <select name="season" required>
-                <option value="">Select Season</option>
-                <option value="kharif">Kharif</option>
-                <option value="rabi">Rabi</option>
-                <option value="summer">Summer</option>
-            </select>
-
-
-            <label>💧 Water Availability</label>
-
-            <select name="water" required>
-                <option value="">Select Water Availability</option>
-                <option value="high">High</option>
-                <option value="medium">Medium</option>
-                <option value="low">Low</option>
-            </select>
-
-
-            <button type="submit">
-                🌾 Get Crop Recommendation
-            </button>
-
-        </form>
-
-
-        {% if recommendation %}
-
-        <div class="result">
-
-            <h2>Recommended Crop</h2>
-
-            <p>
-                Based on the selected conditions:
-            </p>
-
-            <h3>🌱 {{ recommendation }}</h3>
-
-        </div>
-
-        {% endif %}
-
-
-        <a class="back" href="/dashboard">
-            ← Back to Dashboard
-        </a>
-
-    </div>
-
-</body>
->>>>>>> origin/main
 </html>

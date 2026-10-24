@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -26,6 +26,8 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
         }
 
         nav h2 {
@@ -37,6 +39,10 @@
             text-decoration: none;
             margin-left: 20px;
             font-weight: 500;
+        }
+
+        nav a:hover {
+            text-decoration: underline;
         }
 
         .container {
@@ -57,9 +63,9 @@
             color: #555;
             margin-bottom: 30px;
             font-size: 15px;
+            line-height: 1.6;
         }
 
-        /* Calculator Section */
         .calculator-card {
             background: white;
             padding: 25px 30px;
@@ -76,6 +82,7 @@
             display: flex;
             align-items: center;
             gap: 8px;
+            flex-wrap: wrap;
         }
 
         .calc-form {
@@ -99,7 +106,8 @@
             color: #333;
         }
 
-        .calc-group select, .calc-group input {
+        .calc-group select,
+        .calc-group input {
             width: 100%;
             padding: 10px 12px;
             border: 1.5px solid #ccc;
@@ -115,7 +123,7 @@
             border-radius: 7px;
             font-weight: bold;
             cursor: pointer;
-            height: 44px;
+            min-height: 44px;
         }
 
         .calc-btn:hover {
@@ -162,7 +170,7 @@
             padding: 14px 18px;
             border: 1px solid #e2e8f0;
             font-size: 14px;
-            line-height: 1.5;
+            line-height: 1.7;
             margin-top: 10px;
         }
 
@@ -173,10 +181,10 @@
             padding: 12px 16px;
             border-radius: 8px;
             font-size: 13px;
+            line-height: 1.6;
             margin-top: 15px;
         }
 
-        /* Search Bar */
         .search-section {
             display: flex;
             justify-content: center;
@@ -192,6 +200,7 @@
 
         .search-form input {
             flex: 1;
+            min-width: 0;
             padding: 12px 16px;
             border: 1.5px solid #ccc;
             border-radius: 8px;
@@ -208,10 +217,13 @@
             cursor: pointer;
         }
 
-        /* Fertilizer Cards */
+        .search-form button:hover {
+            background: #0f542d;
+        }
+
         .cards {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 25px;
             margin-top: 20px;
         }
@@ -254,7 +266,7 @@
         .card p {
             color: #4a5568;
             font-size: 14px;
-            line-height: 1.5;
+            line-height: 1.6;
             margin-bottom: 12px;
         }
 
@@ -263,6 +275,7 @@
             border-left: 3px solid #176b3a;
             padding: 8px 12px;
             font-size: 13px;
+            line-height: 1.5;
             color: #274732;
             margin-top: 8px;
         }
@@ -272,6 +285,7 @@
             border-left: 3px solid #e53e3e;
             padding: 8px 12px;
             font-size: 12.5px;
+            line-height: 1.5;
             color: #9b2c2c;
             margin-top: 8px;
         }
@@ -291,11 +305,38 @@
         .back:hover {
             background: #0f542d;
         }
+
+        @media (max-width: 600px) {
+            nav {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            nav a {
+                display: inline-block;
+                margin: 8px 12px 0 0;
+            }
+
+            .container {
+                width: 94%;
+            }
+
+            .calculator-card {
+                padding: 20px 15px;
+            }
+
+            .search-form {
+                flex-wrap: wrap;
+            }
+
+            .search-form button {
+                width: 100%;
+            }
+        }
     </style>
 </head>
 
 <body>
-
     <nav>
         <h2>🌱 AgriGuide</h2>
         <div>
@@ -307,13 +348,13 @@
     </nav>
 
     <div class="container">
-
         <h1>🌾 Fertilizer Information & Dosage Calculator</h1>
+
         <p class="intro">
-            Learn about balanced crop nutrition (NPK), application guidelines, and calculate indicative field dosages in English and Telugu.
+            Learn about balanced crop nutrition (NPK), application guidelines,
+            and calculate indicative field dosages in English and Telugu.
         </p>
 
-        <!-- CALCULATOR SECTION -->
         <div class="calculator-card">
             <h2>🧮 Indicative Fertilizer Dosage Calculator / ఎరువుల మోతాదు కాలిక్యులేటర్</h2>
 
@@ -335,7 +376,15 @@
 
                 <div class="calc-group">
                     <label>Field Area (in Acres) / ఎకరాల విస్తీర్ణం:</label>
-                    <input type="number" name="acres" value="{{ selected_acres }}" step="0.5" min="0.5" max="50">
+                    <input
+                        type="number"
+                        name="acres"
+                        value="{{ selected_acres }}"
+                        step="0.5"
+                        min="0.5"
+                        max="50"
+                        required
+                    >
                 </div>
 
                 <button type="submit" class="calc-btn">Calculate / లెక్కించండి</button>
@@ -352,14 +401,17 @@
                         <span>Urea / యూరియా (50kg bags)</span>
                         <strong>{{ dosage.urea_bags }} Bags</strong>
                     </div>
+
                     <div class="dosage-pill">
                         <span>DAP / డీఏపీ (50kg bags)</span>
                         <strong>{{ dosage.dap_bags }} Bags</strong>
                     </div>
+
                     <div class="dosage-pill">
                         <span>MOP / పొటాష్ (50kg bags)</span>
                         <strong>{{ dosage.mop_bags }} Bags</strong>
                     </div>
+
                     <div class="dosage-pill">
                         <span>{{ dosage.zinc_or_gypsum_unit }}</span>
                         <strong>{{ dosage.zinc_or_gypsum }}</strong>
@@ -369,7 +421,9 @@
                 <div class="schedule-box">
                     <strong>📅 Application Schedule (English):</strong><br>
                     {{ dosage.schedule_en }}
+
                     <hr style="margin: 8px 0; border: none; border-top: 1px dashed #ddd;">
+
                     <strong>📅 ఎరువులు వేసే సమయాలు (తెలుగు):</strong><br>
                     {{ dosage.schedule_te }}
                 </div>
@@ -380,10 +434,8 @@
                 </div>
             </div>
             {% endif %}
-
         </div>
 
-        <!-- SEARCH BAR -->
         <div class="search-section">
             <form class="search-form" method="GET" action="/fertilizers">
                 <input
@@ -396,7 +448,6 @@
             </form>
         </div>
 
-        <!-- FERTILIZER CARDS -->
         <div class="cards">
             {% for fert in fertilizers %}
             <div class="card">
@@ -404,16 +455,22 @@
                     <h3>{{ fert.name_en }}</h3>
                     <div class="card-telugu">{{ fert.name_te }}</div>
                     <div class="badge">{{ fert.npk_content }}</div>
+
                     <p>{{ fert.description_en }}</p>
-                    <p style="color: #2d3748; font-style: italic;">{{ fert.description_te }}</p>
+                    <p style="color: #2d3748; font-style: italic;">
+                        {{ fert.description_te }}
+                    </p>
                 </div>
 
                 <div>
                     <div class="card-tip">
-                        <strong>💡 How to Apply:</strong> {{ fert.application_tips_en }}
+                        <strong>💡 How to Apply:</strong>
+                        {{ fert.application_tips_en }}
                     </div>
+
                     <div class="card-warning">
-                        <strong>⚠️ Precaution:</strong> {{ fert.safety_warning_en }}
+                        <strong>⚠️ Precaution:</strong>
+                        {{ fert.safety_warning_en }}
                     </div>
                 </div>
             </div>
@@ -421,150 +478,6 @@
         </div>
 
         <a class="back" href="/dashboard">← Back to Dashboard</a>
-
     </div>
-
 </body>
-=======
-<!DOCTYPE html>
-<html>
-<head>
-    <title>AgriGuide - Fertilizers</title>
-
-    <style>
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: #f1f8f3;
-        }
-
-        nav {
-            background: #176b3a;
-            padding: 18px;
-            color: white;
-        }
-
-        nav h2 {
-            display: inline;
-            margin-left: 30px;
-        }
-
-        nav a {
-            color: white;
-            text-decoration: none;
-            margin-left: 25px;
-        }
-
-        .container {
-            width: 85%;
-            margin: 40px auto;
-        }
-
-        h1 {
-            color: #176b3a;
-            text-align: center;
-        }
-
-        .intro {
-            text-align: center;
-            color: #555;
-        }
-
-        .cards {
-            display: flex;
-            gap: 25px;
-            justify-content: center;
-            flex-wrap: wrap;
-            margin-top: 35px;
-        }
-
-        .card {
-            background: white;
-            width: 260px;
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            text-align: center;
-        }
-
-        .card h2 {
-            color: #176b3a;
-        }
-
-        .card p {
-            color: #555;
-            line-height: 1.6;
-        }
-
-        .back {
-            display: block;
-            width: fit-content;
-            margin: 40px auto;
-            background: #176b3a;
-            color: white;
-            padding: 12px 25px;
-            border-radius: 8px;
-            text-decoration: none;
-        }
-    </style>
-</head>
-
-<body>
-
-    <nav>
-        <h2>🌱 AgriGuide</h2>
-        <a href="/">Home</a>
-        <a href="/dashboard">Dashboard</a>
-    </nav>
-
-    <div class="container">
-
-        <h1>🌾 Fertilizer Information</h1>
-
-        <p class="intro">
-            Learn about common fertilizers and their uses in farming.
-        </p>
-
-        <div class="cards">
-
-            <div class="card">
-                <h2>🌱 Urea</h2>
-                <p>
-                    Urea is a nitrogen fertilizer commonly used to support
-                    healthy plant growth.
-                </p>
-            </div>
-
-            <div class="card">
-                <h2>🌾 DAP</h2>
-                <p>
-                    DAP provides nitrogen and phosphorus, which are important
-                    nutrients for crops.
-                </p>
-            </div>
-
-            <div class="card">
-                <h2>🍃 NPK</h2>
-                <p>
-                    NPK fertilizers contain nitrogen, phosphorus and potassium
-                    in different proportions.
-                </p>
-            </div>
-
-            <div class="card">
-                <h2>🌿 Organic Fertilizer</h2>
-                <p>
-                    Organic fertilizers can add nutrients and organic matter
-                    to the soil.
-                </p>
-            </div>
-
-        </div>
-
-        <a class="back" href="/dashboard">← Back to Dashboard</a>
-
-    </div>
-
-</body>
->>>>>>> origin/main
 </html>

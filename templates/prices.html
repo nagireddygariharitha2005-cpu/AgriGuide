@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -26,6 +26,8 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
         }
 
         nav h2 {
@@ -37,6 +39,10 @@
             text-decoration: none;
             margin-left: 20px;
             font-weight: 500;
+        }
+
+        nav a:hover {
+            text-decoration: underline;
         }
 
         .container {
@@ -57,9 +63,9 @@
             color: #555;
             margin-bottom: 25px;
             font-size: 15px;
+            line-height: 1.6;
         }
 
-        /* Disclaimer Card */
         .disclaimer-card {
             background: #fff8e6;
             border-left: 5px solid #d97706;
@@ -83,9 +89,9 @@
             font-size: 13.5px;
             line-height: 1.5;
             margin-bottom: 6px;
+            overflow-wrap: anywhere;
         }
 
-        /* Search Bar */
         .search-section {
             display: flex;
             justify-content: center;
@@ -101,6 +107,7 @@
 
         .search-form input {
             flex: 1;
+            min-width: 0;
             padding: 12px 16px;
             border: 1.5px solid #ccc;
             border-radius: 8px;
@@ -121,7 +128,6 @@
             background: #0f542d;
         }
 
-        /* Table */
         .table-responsive {
             background: white;
             box-shadow: 0 4px 15px rgba(0,0,0,0.06);
@@ -131,6 +137,7 @@
 
         table {
             width: 100%;
+            min-width: 750px;
             border-collapse: collapse;
         }
 
@@ -189,11 +196,34 @@
         .back:hover {
             background: #0f542d;
         }
+
+        @media (max-width: 600px) {
+            nav {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            nav a {
+                display: inline-block;
+                margin: 8px 12px 0 0;
+            }
+
+            .container {
+                width: 94%;
+            }
+
+            .search-form {
+                flex-wrap: wrap;
+            }
+
+            .search-form button {
+                width: 100%;
+            }
+        }
     </style>
 </head>
 
 <body>
-
     <nav>
         <h2>🌱 AgriGuide</h2>
         <div>
@@ -205,20 +235,18 @@
     </nav>
 
     <div class="container">
-
         <h1>🌾 Agricultural Commodity Prices & Reference MSP</h1>
+
         <p class="intro">
             View official Government Minimum Support Prices (MSP) and wholesale benchmark rates in English and Telugu.
         </p>
 
-        <!-- TRANSPARENCY DISCLAIMER (Phase 15) -->
         <div class="disclaimer-card">
             <h3>📢 Market Data Transparency Notice / మార్కెట్ సమాచార గమనిక:</h3>
             <p><strong>English:</strong> {{ disclaimer_en }}</p>
             <p><strong>తెలుగు:</strong> {{ disclaimer_te }}</p>
         </div>
 
-        <!-- SEARCH FORM -->
         <div class="search-section">
             <form class="search-form" method="GET" action="/prices">
                 <input
@@ -231,7 +259,6 @@
             </form>
         </div>
 
-        <!-- COMMODITIES TABLE -->
         <div class="table-responsive">
             <table>
                 <thead>
@@ -252,10 +279,22 @@
                             <span class="crop-name-te">{{ item.crop_te }}</span>
                         </td>
                         <td>{{ item.category }}</td>
-                        <td><span class="price-badge">{{ item.msp_per_quintal }}</span></td>
+                        <td>
+                            <span class="price-badge">{{ item.msp_per_quintal }}</span>
+                        </td>
                         <td><strong>{{ item.approx_per_kg }}</strong></td>
                         <td>{{ item.season }}</td>
-                        <td><span style="font-size: 12px; color: #555;">{{ item.type }}</span></td>
+                        <td>
+                            <span style="font-size: 12px; color: #555;">
+                                {{ item.type }}
+                            </span>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="6" style="text-align: center; padding: 25px;">
+                            No matching crop prices found. Try another crop name.
+                        </td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -263,162 +302,6 @@
         </div>
 
         <a class="back" href="/dashboard">← Back to Dashboard</a>
-
     </div>
-
 </body>
-=======
-<!DOCTYPE html>
-<html>
-<head>
-    <title>AgriGuide - Crop Prices</title>
-
-    <style>
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: #f1f8f3;
-        }
-
-        nav {
-            background: #176b3a;
-            padding: 18px;
-            color: white;
-        }
-
-        nav h2 {
-            display: inline;
-            margin-left: 30px;
-        }
-
-        nav a {
-            color: white;
-            text-decoration: none;
-            margin-left: 25px;
-        }
-
-        .container {
-            width: 85%;
-            margin: 40px auto;
-        }
-
-        h1 {
-            color: #176b3a;
-            text-align: center;
-        }
-
-        .intro {
-            text-align: center;
-            color: #555;
-            margin-bottom: 30px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            background: white;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            border-radius: 10px;
-            overflow: hidden;
-        }
-
-        th {
-            background: #176b3a;
-            color: white;
-            padding: 16px;
-        }
-
-        td {
-            padding: 15px;
-            text-align: center;
-            border-bottom: 1px solid #ddd;
-        }
-
-        tr:hover {
-            background: #f0f7f2;
-        }
-
-        .price {
-            color: #176b3a;
-            font-weight: bold;
-        }
-
-        .note {
-            text-align: center;
-            margin-top: 20px;
-            color: #777;
-            font-size: 14px;
-        }
-
-        .back {
-            display: block;
-            width: fit-content;
-            margin: 35px auto;
-            background: #176b3a;
-            color: white;
-            padding: 12px 25px;
-            border-radius: 8px;
-            text-decoration: none;
-        }
-    </style>
-</head>
-
-<body>
-
-    <nav>
-        <h2>🌱 AgriGuide</h2>
-        <a href="/">Home</a>
-        <a href="/dashboard">Dashboard</a>
-    </nav>
-
-    <div class="container">
-
-        <h1>🌾 Crop Prices</h1>
-
-        <p class="intro">
-            View sample prices of commonly used agricultural crops.
-        </p>
-
-        <table>
-            <tr>
-                <th>Crop</th>
-                <th>Price per Kg</th>
-            </tr>
-
-            <tr>
-                <td>Rice</td>
-                <td class="price">₹40</td>
-            </tr>
-
-            <tr>
-                <td>Wheat</td>
-                <td class="price">₹35</td>
-            </tr>
-
-            <tr>
-                <td>Tomato</td>
-                <td class="price">₹30</td>
-            </tr>
-
-            <tr>
-                <td>Potato</td>
-                <td class="price">₹25</td>
-            </tr>
-
-            <tr>
-                <td>Groundnut</td>
-                <td class="price">₹60</td>
-            </tr>
-        </table>
-
-        <p class="note">
-            *These are sample project prices and may not represent current market prices.
-        </p>
-
-        <a class="back" href="/dashboard">← Back to Dashboard</a>
-
-    </div>
-
-</body>
->>>>>>> origin/main
 </html>
