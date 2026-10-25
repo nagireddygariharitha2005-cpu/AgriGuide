@@ -1,160 +1,553 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-    <title>AgriGuide - Developer</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgriGuide - Developer Information</title>
 
     <style>
-        body {
+        * {
+            box-sizing: border-box;
             margin: 0;
+            padding: 0;
             font-family: Arial, sans-serif;
+        }
+
+        body {
             background: #f1f8f3;
+            color: #2c3e50;
+            min-height: 100vh;
         }
 
         nav {
             background: #176b3a;
-            padding: 18px;
+            padding: 18px 40px;
             color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
         }
 
         nav h2 {
-            display: inline;
-            margin-left: 30px;
+            font-size: 22px;
         }
 
         nav a {
             color: white;
             text-decoration: none;
-            margin-left: 25px;
+            margin-left: 20px;
+            font-weight: 500;
+        }
+
+        nav a:hover {
+            text-decoration: underline;
         }
 
         .container {
-            width: 85%;
-            margin: 45px auto;
+            width: 90%;
+            max-width: 920px;
+            margin: 40px auto;
         }
 
-        h1 {
+        .title-section {
             text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .title-section h1 {
             color: #176b3a;
+            font-size: 32px;
+            margin-bottom: 8px;
         }
 
-        .intro {
-            text-align: center;
+        .title-section p {
             color: #666;
-            margin-bottom: 35px;
+            font-size: 16px;
         }
 
-        .developer {
+        /* Profile Card */
+        .profile-card {
+            background: white;
+            border-radius: 16px;
+            padding: 40px 35px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+            margin-bottom: 30px;
+        }
+
+        .profile-header {
+            text-align: center;
+            border-bottom: 1px solid #eef2ef;
+            padding-bottom: 30px;
+            margin-bottom: 30px;
+        }
+
+        .photo-wrapper {
             display: flex;
             justify-content: center;
+            margin-bottom: 18px;
         }
 
-        .member {
-            background: white;
-            width: 320px;
-            padding: 30px;
-            text-align: center;
-            border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        .developer-photo {
+            width: 175px;
+            height: 175px;
+            border-radius: 50%;
+            object-fit: cover;
+            object-position: center 18%;
+            border: 4px solid #176b3a;
+            box-shadow: 0 8px 24px rgba(23, 107, 58, 0.22);
+            background: #eef8f0;
         }
 
-        .icon {
-            font-size: 60px;
+        .avatar-fallback {
+            width: 165px;
+            height: 165px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #176b3a, #2d8a54);
+            color: white;
+            font-size: 54px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 4px solid #176b3a;
+            box-shadow: 0 8px 24px rgba(23, 107, 58, 0.22);
         }
 
-        .member h2 {
+        .profile-header h2 {
             color: #176b3a;
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .role-badge {
+            display: inline-block;
+            background: #e9f6ed;
+            color: #176b3a;
+            font-weight: bold;
+            padding: 7px 20px;
+            border-radius: 20px;
+            font-size: 14px;
+            border: 1px solid #cce5d6;
+        }
+
+        /* Developer Info Grid */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 18px;
+            margin-bottom: 30px;
+        }
+
+        .info-item {
+            background: #fbfdfc;
+            border: 1px solid #e3ede6;
+            padding: 20px;
+            border-radius: 12px;
+        }
+
+        .info-item strong {
+            display: block;
+            color: #176b3a;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+
+        .info-item span {
+            color: #2c3e50;
+            font-size: 15.5px;
+            line-height: 1.45;
+            font-weight: 500;
+        }
+
+        .project-description-box {
+            background: #eef8f0;
+            border: 1px solid #cce5d6;
+            border-left: 5px solid #176b3a;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+
+        .project-description-box h4 {
+            color: #176b3a;
+            font-size: 15px;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .project-description-box p {
+            color: #2c3e50;
+            line-height: 1.6;
+            font-size: 15.5px;
+        }
+
+        /* Section Box */
+        .section-box {
+            background: #fbfdfc;
+            border: 1px solid #e3ede6;
+            padding: 26px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+        }
+
+        .section-box h3 {
+            color: #176b3a;
+            font-size: 21px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-intro {
+            color: #555;
+            line-height: 1.6;
+            font-size: 15px;
+            margin-bottom: 18px;
+        }
+
+        /* Technologies Used Cards Grid */
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 16px;
+        }
+
+        .tech-card {
+            background: white;
+            border: 1px solid #e2ede5;
+            border-radius: 10px;
+            padding: 18px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .tech-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.07);
+        }
+
+        .tech-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
             margin-bottom: 10px;
         }
 
-        .member p {
-            color: #666;
-            line-height: 1.6;
+        .tech-title {
+            font-weight: bold;
+            color: #176b3a;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
 
-        .project-info {
-            margin-top: 25px;
+        .tech-category {
             background: #e9f6ed;
-            padding: 18px;
+            color: #176b3a;
+            font-size: 11px;
+            font-weight: bold;
+            padding: 3px 9px;
             border-radius: 10px;
         }
 
-        .project-info strong {
-            color: #176b3a;
+        .tech-desc {
+            font-size: 14px;
+            color: #555;
+            line-height: 1.5;
         }
 
-        .back {
+        /* Capabilities List */
+        .capabilities-list {
+            list-style: none;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        .capabilities-list li {
+            padding: 12px 16px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+            font-size: 14.5px;
+            color: #333;
+        }
+
+        .capabilities-list li::before {
+            content: "✓ ";
+            color: #176b3a;
+            font-weight: bold;
+            margin-right: 6px;
+        }
+
+        .back-btn {
             display: block;
             width: fit-content;
-            margin: 40px auto;
+            margin: 30px auto;
             background: #176b3a;
             color: white;
-            padding: 12px 25px;
+            padding: 13px 32px;
             border-radius: 8px;
             text-decoration: none;
+            font-weight: bold;
+            transition: background 0.2s;
+            box-shadow: 0 4px 10px rgba(23, 107, 58, 0.2);
         }
 
-        .back:hover {
+        .back-btn:hover {
             background: #0f542d;
+        }
+
+        @media (max-width: 600px) {
+            nav {
+                padding: 15px 20px;
+            }
+
+            nav a {
+                margin-left: 10px;
+            }
+
+            .profile-card {
+                padding: 24px 18px;
+            }
         }
     </style>
 </head>
 
 <body>
-
     <nav>
         <h2>🌱 AgriGuide</h2>
-        <a href="/">Home</a>
-        <a href="/dashboard">Dashboard</a>
+        <div>
+            <a href="/">Home</a>
+            {% if user_logged_in %}
+            <a href="/dashboard">Dashboard</a>
+            <a href="/logout">Logout</a>
+            {% else %}
+            <a href="/login">Login</a>
+            <a href="/register">Register</a>
+            {% endif %}
+        </div>
     </nav>
 
     <div class="container">
-
-        <h1>👩‍💻 About the Developer</h1>
-
-        <p class="intro">
-            AgriGuide is an individual project developed to provide
-            useful smart farming tools.
-        </p>
-
-        <div class="developer">
-
-            <div class="member">
-
-                <div class="icon">👩‍💻</div>
-
-                <h2>Haritha</h2>
-
-                <p>
-                    Individual Project Developer
-                </p>
-
-                <div class="project-info">
-
-                    <p>
-                        <strong>Project:</strong> AgriGuide
-                    </p>
-
-                    <p>
-                        <strong>Role:</strong> Design, Development,
-                        Testing & Presentation
-                    </p>
-
-                    <p>
-                        <strong>Technology:</strong> Python, Flask,
-                        HTML & CSS
-                    </p>
-
-                </div>
-
-            </div>
-
+        <div class="title-section">
+            <h1>👩‍💻 Developer Information</h1>
+            <p>Meet the developer and learn about the technologies powering AgriGuide.</p>
         </div>
 
-        <a class="back" href="/dashboard">
-            ← Back to Dashboard
-        </a>
+        <div class="profile-card">
+            <!-- Profile Header with Developer Photo -->
+            <div class="profile-header">
+                <div class="photo-wrapper">
+                    <img src="{{ developer.photo_url if (developer and developer.photo_url) else url_for('static', filename='images/developer.jpg') }}"
+                        alt="{{ developer.developer_name if developer else 'Haritha Nagireddygari' }}"
+                        class="developer-photo" id="developer-img"
+                        onerror="handleDevPhotoError(this)" />
+                    <div class="avatar-fallback" id="avatar-fallback" style="display: none;">
+                        <span>HN</span>
+                    </div>
+                </div>
+                <div id="photo-instruction-hint" style="display: none; margin-top: 12px; text-align: center;">
+                    <span style="display: inline-block; background: #eef8f0; color: #176b3a; border: 1.5px dashed #8ec39f; padding: 7px 16px; border-radius: 8px; font-size: 13.5px;">
+                        📸 <strong>Developer Photo:</strong> To show your actual picture, place your photo file at <code>static/images/developer.jpg</code> (or <code>.png</code>).
+                    </span>
+                </div>
 
+                <h2>{{ developer.developer_name if developer else "Haritha Nagireddygari" }}</h2>
+                <span class="role-badge">{{ developer.role if developer else "Solo Student Developer" }}</span>
+            </div>
+
+            <!-- Key Developer Attributes -->
+            <div class="info-grid">
+                <div class="info-item">
+                    <strong>Developer Name</strong>
+                    <span>{{ developer.developer_name if developer else "Haritha Nagireddygari" }}</span>
+                </div>
+
+                <div class="info-item">
+                    <strong>Qualification</strong>
+                    <span>{{ developer.qualification if developer and developer.qualification else (developer.education if developer else "B.Tech CSE") }}</span>
+                </div>
+
+                <div class="info-item">
+                    <strong>Project Nature</strong>
+                    <span>{{ developer.project_type if developer and developer.project_type else "Solo Mini-Project (Developed Individually)" }}</span>
+                </div>
+
+                <div class="info-item">
+                    <strong>Project Title</strong>
+                    <span>{{ developer.project if developer else "AgriGuide – Smart Fertilizer Information and Farmer Assistance System" }}</span>
+                </div>
+
+                <div class="info-item">
+                    <strong>College / Institution</strong>
+                    <span>{{ developer.college if developer else "PBR Visvodaya Institute of Technology and Sciences" }}</span>
+                </div>
+
+                <div class="info-item">
+                    <strong>Contact Email</strong>
+                    <span>{{ developer.email if developer else "nagireddygariharitha2005@gmail.com" }}</span>
+                </div>
+            </div>
+
+            <!-- Project Description Banner -->
+            <div class="project-description-box">
+                <h4>About the Project</h4>
+                <p>
+                    {{ developer.description if developer else "Developed AgriGuide to help farmers access fertilizer
+                    information, crop recommendations, agricultural price information, and farming assistance." }}
+                </p>
+            </div>
+
+            <!-- Technologies Used Section -->
+            <div class="section-box">
+                <h3>🛠️ Technologies Used</h3>
+                <p class="section-intro">
+                    AgriGuide is built using a modern, efficient technology stack where every tool serves a genuine
+                    purpose in the application. Here is what each technology does in the project:
+                </p>
+
+                <div class="tech-grid">
+                    {% if developer and developer.technologies %}
+                    {% for tech in developer.technologies %}
+                    <div class="tech-card">
+                        <div class="tech-card-header">
+                            <span class="tech-title">{{ tech.icon }} {{ tech.name }}</span>
+                            <span class="tech-category">{{ tech.category }}</span>
+                        </div>
+                        <p class="tech-desc">{{ tech.description }}</p>
+                    </div>
+                    {% endfor %}
+                    {% else %}
+                    <div class="tech-card">
+                        <div class="tech-card-header">
+                            <span class="tech-title">🐍 Python</span>
+                            <span class="tech-category">Backend Core</span>
+                        </div>
+                        <p class="tech-desc">The main programming language used to build server logic, perform
+                            agricultural calculations, and connect services.</p>
+                    </div>
+                    <div class="tech-card">
+                        <div class="tech-card-header">
+                            <span class="tech-title">🌶️ Flask</span>
+                            <span class="tech-category">Web Framework</span>
+                        </div>
+                        <p class="tech-desc">A lightweight Python web framework used to create URL routes, manage user
+                            sessions, and render HTML templates.</p>
+                    </div>
+                    <div class="tech-card">
+                        <div class="tech-card-header">
+                            <span class="tech-title">📄 HTML</span>
+                            <span class="tech-category">Page Structure</span>
+                        </div>
+                        <p class="tech-desc">The markup language used to build the structure and elements of all web
+                            pages, forms, and farmer input fields.</p>
+                    </div>
+                    <div class="tech-card">
+                        <div class="tech-card-header">
+                            <span class="tech-title">🎨 CSS</span>
+                            <span class="tech-category">Styling & Design</span>
+                        </div>
+                        <p class="tech-desc">The stylesheet language used to design the responsive green theme, mobile
+                            layouts, and modern visual cards.</p>
+                    </div>
+                    <div class="tech-card">
+                        <div class="tech-card-header">
+                            <span class="tech-title">⚡ JavaScript</span>
+                            <span class="tech-category">Client Interaction</span>
+                        </div>
+                        <p class="tech-desc">The frontend programming language used for chat messaging, interactive
+                            features, microphone speech input, and voice read-aloud.</p>
+                    </div>
+                    <div class="tech-card">
+                        <div class="tech-card-header">
+                            <span class="tech-title">🗄️ SQLite</span>
+                            <span class="tech-category">Database Storage</span>
+                        </div>
+                        <p class="tech-desc">A lightweight, serverless relational database used to store registered
+                            farmer accounts and secure password hashes.</p>
+                    </div>
+                    <div class="tech-card">
+                        <div class="tech-card-header">
+                            <span class="tech-title">🤖 Google Gemini API</span>
+                            <span class="tech-category">Artificial Intelligence</span>
+                        </div>
+                        <p class="tech-desc">The AI model used to provide bilingual conversational answers, analyze crop
+                            leaf disease photos, and generate recommendations.</p>
+                    </div>
+                    <div class="tech-card">
+                        <div class="tech-card-header">
+                            <span class="tech-title">🐙 GitHub</span>
+                            <span class="tech-category">Version Control</span>
+                        </div>
+                        <p class="tech-desc">The code management platform used to track file changes, manage project
+                            versions, and back up the source code.</p>
+                    </div>
+                    <div class="tech-card">
+                        <div class="tech-card-header">
+                            <span class="tech-title">▲ Vercel</span>
+                            <span class="tech-category">Cloud Deployment</span>
+                        </div>
+                        <p class="tech-desc">The serverless cloud platform used to host the deployed website online and
+                            execute the Flask application at zero cost.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Project Highlights Section -->
+            <div class="section-box">
+                <h3>🌾 Project Highlights</h3>
+                <ul class="capabilities-list">
+                    <li>AI Agricultural Chatbot (English & Telugu)</li>
+                    <li>Voice Input & Audio Speech (Web Speech API)</li>
+                    <li>Crop Leaf Disease Photo Analysis (Gemini Vision)</li>
+                    <li>Smart Fertilizer Catalog & Dosage Calculator</li>
+                    <li>Dynamic Soil, Season & Water Crop Recommendations</li>
+                    <li>Official Benchmark MSP Market Crop Prices</li>
+                    <li>Local Agronomic Offline Fallback System</li>
+                    <li>Secure User Registration & Authentication (Werkzeug Hashing)</li>
+                </ul>
+            </div>
+        </div>
+
+        {% if user_logged_in %}
+        <a class="back-btn" href="/dashboard">← Back to Dashboard</a>
+        {% else %}
+        <a class="back-btn" href="/">← Back to Home</a>
+        {% endif %}
     </div>
-
+    <script>
+        const devPhotoCandidates = [
+            "{{ developer.photo_url if (developer and developer.photo_url) else url_for('static', filename='images/developer.jpg') }}",
+            "{{ url_for('static', filename='images/developer.png') }}",
+            "{{ url_for('static', filename='images/developer.jpeg') }}",
+            "{{ url_for('static', filename='images/developer.webp') }}",
+            "{{ url_for('static', filename='developer.jpg') }}",
+            "{{ url_for('static', filename='developer.png') }}"
+        ];
+        let devPhotoIndex = 0;
+        function handleDevPhotoError(img) {
+            devPhotoIndex++;
+            if (devPhotoIndex < devPhotoCandidates.length) {
+                img.src = devPhotoCandidates[devPhotoIndex];
+            } else {
+                img.style.display = 'none';
+                const fallback = document.getElementById('avatar-fallback');
+                if (fallback) fallback.style.display = 'flex';
+                const hint = document.getElementById('photo-instruction-hint');
+                if (hint) hint.style.display = 'block';
+            }
+        }
+    </script>
 </body>
+
 </html>

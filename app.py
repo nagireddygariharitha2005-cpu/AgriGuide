@@ -2,6 +2,10 @@ import os
 import sqlite3
 import logging
 from dotenv import load_dotenv
+
+# Load environment configuration early before service modules initialize
+load_dotenv(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env"))
+
 from flask import Flask, render_template, request, jsonify, redirect, session, flash
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -15,14 +19,22 @@ from services.ai_service import (
     transcribe_farmer_audio
 )
 from services.price_service import get_crop_prices
-from services.developer_service import is_developer_query, get_developer_profile_response, DEVELOPER_PROFILE
+from services.developer_service import (
+    is_developer_query,
+    get_developer_profile_response,
+    DEVELOPER_PROFILE,
+    get_developer_photo_url
+)
 from agri_data.fertilizers import FERTILIZERS_CATALOG, calculate_fertilizer_guidance
 from agri_data.rules import evaluate_agronomic_recommendation
 
-# Load environment configuration
-load_dotenv(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env"))
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-app = Flask(__name__)
+app = Flask(
+    __name__,
+    template_folder=os.path.join(BASE_DIR, "templates"),
+    static_folder=os.path.join(BASE_DIR, "static")
+)
 # Secure secret key handling via environment variable (Phase 12)
 app.secret_key = os.getenv("FLASK_SECRET_KEY", "agriguide_prod_secure_secret_key_2026")
 app.config["TEMPLATES_AUTO_RELOAD"] = True
@@ -394,7 +406,7 @@ def chat():
 
     # Check for developer / project development intent
     if is_developer_query(message):
-        return jsonify(get_developer_profile_response())
+        return jsonify(get_developer_profile_response(message))
 
     # Process query through bilingual AI service
     result = ask_agricultural_chat(message, conversation_history=history)
@@ -505,10 +517,10 @@ def transcribe_audio():
 
 @app.route("/developers")
 def developers():
-    if "user_id" not in session:
-        return redirect("/login")
-
-    return render_template("developers.html", developer=DEVELOPER_PROFILE)
+    user_logged_in = "user_id" in session
+    profile = dict(DEVELOPER_PROFILE)
+    profile["photo_url"] = get_developer_photo_url()
+    return render_template("developers.html", developer=profile, user_logged_in=user_logged_in)
 
 
 # =========================

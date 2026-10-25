@@ -1,13 +1,15 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AgriGuide - Dashboard</title>
 
     <style>
-        * { box-sizing: border-box; }
+        * {
+            box-sizing: border-box;
+        }
 
         body {
             margin: 0;
@@ -37,16 +39,28 @@
             margin: 40px auto;
         }
 
-        .welcome, .card {
+        .welcome,
+        .card {
             background: white;
             padding: 25px;
             border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
         }
 
-        .welcome { margin-bottom: 30px; }
-        .welcome h1, .card h2 { color: #176b3a; }
-        .welcome p, .card p { color: #666; line-height: 1.5; }
+        .welcome {
+            margin-bottom: 30px;
+        }
+
+        .welcome h1,
+        .card h2 {
+            color: #176b3a;
+        }
+
+        .welcome p,
+        .card p {
+            color: #666;
+            line-height: 1.5;
+        }
 
         .cards {
             display: grid;
@@ -54,7 +68,9 @@
             gap: 25px;
         }
 
-        .card { text-align: center; }
+        .card {
+            text-align: center;
+        }
 
         .card a {
             display: inline-block;
@@ -66,7 +82,9 @@
             border-radius: 7px;
         }
 
-        .card a:hover { background: #0f542d; }
+        .card a:hover {
+            background: #0f542d;
+        }
 
         .logout {
             display: block;
@@ -77,6 +95,10 @@
             padding: 12px 25px;
             border-radius: 8px;
             text-decoration: none;
+        }
+
+        .logout:hover {
+            background: #8f1d18;
         }
     </style>
 </head>
@@ -124,4 +146,14 @@
             </div>
 
             <div class="card">
-                <h2>👩‍💻 Developers
+                <h2>👩‍💻 Developer</h2>
+                <p>Learn about the developer and technical architecture behind AgriGuide.</p>
+                <a href="/developers">View Developer Info</a>
+            </div>
+        </div>
+
+        <a class="logout" href="/logout">Logout</a>
+    </div>
+</body>
+
+</html>
