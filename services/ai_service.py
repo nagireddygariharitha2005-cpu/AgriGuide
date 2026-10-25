@@ -21,8 +21,8 @@ load_dotenv(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file_
 logger = logging.getLogger("agriguide.ai")
 
 # Default models
-DEFAULT_GEMINI_MODEL = "gemini-3.1-flash-lite"
-BACKUP_GEMINI_MODEL = "gemini-3.8-flash"
+DEFAULT_GEMINI_MODEL = "gemini-3.5-flash-lite"
+BACKUP_GEMINI_MODEL = "gemini-flash-lite-latest"
 DEFAULT_OPENAI_MODEL = "gpt-4o-mini"
 GEMINI_BASE_URL = "https://generativelanguage.googleapis.com/v1beta/openai/"
 
@@ -36,13 +36,23 @@ def get_ai_client_and_model() -> Tuple[Optional[OpenAI], Optional[str], Optional
     gemini_key = os.getenv("GEMINI_API_KEY")
     if gemini_key and gemini_key.strip():
         model = os.getenv("GEMINI_MODEL", DEFAULT_GEMINI_MODEL).strip()
-        # Automatically migrate deprecated model names that return 404 from Google
-        if model in ("gemini-3.5-flash", "gemini-2.0-flash", "gemini-1.5-flash", "gemini-pro"):
+        # Automatically migrate deprecated, 404, or 503-prone model names that cause timeouts
+        if model in (
+            "gemini-3.1-flash-lite",
+            "gemini-3.8-flash",
+            "gemini-3.5-flash",
+            "gemini-2.5-flash",
+            "gemini-2.5-flash-lite",
+            "gemini-2.0-flash",
+            "gemini-1.5-flash",
+            "gemini-pro"
+        ):
             model = DEFAULT_GEMINI_MODEL
         client = OpenAI(
             api_key=gemini_key.strip(),
             base_url=GEMINI_BASE_URL,
-            timeout=45.0
+            timeout=20.0,
+            max_retries=1
         )
         return client, model, "gemini"
 
@@ -51,7 +61,8 @@ def get_ai_client_and_model() -> Tuple[Optional[OpenAI], Optional[str], Optional
         model = os.getenv("OPENAI_MODEL", DEFAULT_OPENAI_MODEL).strip()
         client = OpenAI(
             api_key=openai_key.strip(),
-            timeout=30.0
+            timeout=20.0,
+            max_retries=1
         )
         return client, model, "openai"
 
@@ -114,22 +125,35 @@ def chat_completion(
                 logger.warning(f"Fallback model {alt_model} also exhausted or failed: {alt_err}")
         return None, provider, "quota"
 
-    except (APIConnectionError, TimeoutError):
-        logger.warning("AI connection timeout or network failure")
+    except (APIConnectionError, TimeoutError) as conn_err:
+        logger.warning(f"AI connection timeout or network failure: {conn_err}")
+        alt_model = BACKUP_GEMINI_MODEL if model != BACKUP_GEMINI_MODEL else DEFAULT_GEMINI_MODEL
+        if provider == "gemini" and model != alt_model:
+            try:
+                logger.info(f"Retrying connection with backup model {alt_model}")
+                kwargs["model"] = alt_model
+                completion = client.chat.completions.create(**kwargs)
+                if completion.choices and completion.choices[0].message:
+                    content = completion.choices[0].message.content
+                    if content and content.strip():
+                        return content.strip(), provider, None
+            except Exception as retry_err:
+                logger.warning(f"Backup retry also timed out or failed: {retry_err}")
         return None, provider, "timeout"
 
     except APIStatusError as err:
         logger.error(f"AI API status error: {err.status_code}")
-        # If model was not found or 503, retry once with alternate model
+        # If model returned 503 or 404 or 500/502/504, retry once with alternate model
         alt_model = BACKUP_GEMINI_MODEL if model != BACKUP_GEMINI_MODEL else DEFAULT_GEMINI_MODEL
-        if provider == "gemini" and err.status_code in (404, 503) and model != alt_model:
+        if provider == "gemini" and err.status_code in (404, 500, 502, 503, 504) and model != alt_model:
             try:
                 logger.info(f"Retrying chat completion with alternate model {alt_model}")
                 kwargs["model"] = alt_model
                 completion = client.chat.completions.create(**kwargs)
                 if completion.choices and completion.choices[0].message:
                     content = completion.choices[0].message.content
-                    return (content.strip() if content else ""), provider, None
+                    if content and content.strip():
+                        return content.strip(), provider, None
             except Exception as retry_err:
                 logger.error(f"Retry with {alt_model} failed: {retry_err}")
         return None, provider, "status_error"
@@ -198,7 +222,10 @@ def ask_agricultural_chat(message: str, conversation_history: Optional[List[Dict
         }
     elif error in ("timeout", "network"):
         return {
-            "reply": "🌐 Network connection to the AI service timed out. Please check your internet connection.",
+            "reply": (
+                "🌐 Network connection to the AI service timed out. Please try asking again in a moment. "
+                "(AI సేవకు నెట్‌వర్క్ కనెక్షన్ ఆలస్యమైంది. దయచేసి కాసేపటి తర్వాత మళ్లీ ప్రయత్నించండి.)"
+            ),
             "language": "en",
             "provider": provider or "none",
             "configured": True
@@ -441,70 +468,17 @@ def transcribe_farmer_audio(
     language_hint: str = "te"
 ) -> Dict[str, Any]:
     """
-    Transcribes audio bytes recorded by the user's microphone.
-    Supports Telugu, English, and Tanglish voice queries using Gemini multimodal audio.
+    AgriGuide processes microphone voice queries directly in the farmer's browser
+    via the native Web Speech API for seamless low-latency English and Telugu recognition.
     """
-    if not audio_bytes or len(audio_bytes) < 100:
-        return {
-            "success": False,
-            "transcript": "",
-            "reply": "Audio recording was empty. Please try speaking again.",
-            "language": language_hint
-        }
-
-    client, model, provider = get_ai_client_and_model()
-    if not client:
-        return {
-            "success": False,
-            "transcript": "",
-            "reply": "Speech transcription requires an active GEMINI_API_KEY in the .env file.",
-            "language": language_hint
-        }
-
-    b64_audio = base64.b64encode(audio_bytes).decode("utf-8")
-    data_uri = f"data:{mime_type};base64,{b64_audio}"
-
-    lang_desc = "Telugu (తెలుగు)" if language_hint.startswith("te") else "English"
-    system_prompt = (
-        "You are an expert bilingual speech-to-text transcriber for Indian farmers. "
-        "Listen carefully to the audio and transcribe the exact words spoken by the farmer. "
-        f"The farmer is speaking primarily in {lang_desc} or mixed English/Telugu. "
-        "If spoken in Telugu, write in natural Telugu script (తెలుగు). "
-        "If spoken in English, write in English. "
-        "Output ONLY the transcribed sentence. Do not add quotes, introductory text, explanations, or translations. "
-        "If the audio is completely silent or background noise with no speech, output SILENT."
-    )
-
-    messages = [
-        {"role": "system", "content": system_prompt},
-        {
-            "role": "user",
-            "content": [
-                {"type": "text", "text": "Transcribe this audio recording:"},
-                {"type": "image_url", "image_url": {"url": data_uri}}
-            ]
-        }
-    ]
-
-    content, prov, error = chat_completion(messages, temperature=0.1, max_tokens=1000)
-
-    if error or not content or content.strip() == "SILENT":
-        return {
-            "success": False,
-            "transcript": "",
-            "reply": "No clear speech was recognized. Please try speaking closer to the microphone.",
-            "language": language_hint
-        }
-
-    transcript = content.strip().strip('"\'')
-    is_telugu = any("\u0C00" <= c <= "\u0C7F" for c in transcript)
-
+    is_te = str(language_hint).startswith("te")
+    msg_en = "Voice input is processed directly in your browser using the microphone. Please speak into the mic or type your question."
+    msg_te = "వాయిస్ ఇన్‌పుట్ మీ బ్రౌజర్ మైక్రోఫోన్ ద్వారా ప్రాసెస్ చేయబడుతుంది. దయచేసి మైక్‌లో మాట్లాడండి లేదా ప్రశ్నను టైప్ చేయండి."
     return {
-        "success": True,
-        "transcript": transcript,
-        "reply": transcript,
-        "language": "te" if is_telugu else "en",
-        "provider": prov
+        "success": False,
+        "transcript": "",
+        "reply": msg_te if is_te else msg_en,
+        "language": language_hint
     }
 
 
@@ -515,29 +489,8 @@ def process_voice_query(
     conversation_history: Optional[List[Dict[str, str]]] = None
 ) -> Dict[str, Any]:
     """
-    Transcribes farmer's audio query and immediately answers it via the agricultural chatbot.
+    AgriGuide uses client-side Web Speech recognition for voice queries.
     """
-    transcribe_res = transcribe_farmer_audio(audio_bytes, mime_type, language_hint)
-    if not transcribe_res.get("success") or not transcribe_res.get("transcript"):
-        return {
-            "reply": transcribe_res.get("reply", "Could not transcribe audio. Please try again or type your question."),
-            "transcript": "",
-            "language": language_hint,
-            "success": False
-        }
-
-    user_query = transcribe_res["transcript"]
-    # Check developer query
-    from services.developer_service import is_developer_query, get_developer_profile_response
-    if is_developer_query(user_query):
-        res = get_developer_profile_response(user_query)
-        res["transcript"] = user_query
-        res["success"] = True
-        return res
-
-    chat_res = ask_agricultural_chat(user_query, conversation_history=conversation_history)
-    chat_res["transcript"] = user_query
-    chat_res["success"] = True
-    return chat_res
+    return transcribe_farmer_audio(audio_bytes, mime_type, language_hint)
 
 

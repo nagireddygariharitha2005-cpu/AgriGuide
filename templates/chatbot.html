@@ -376,8 +376,6 @@ function startListening(){
 
  if(SpeechRecognitionAPI){
   startWebSpeechRecognition(isTelugu);
- }else if(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia){
-  startMediaRecorderAudio(isTelugu);
  }else{
   setVoiceStatus(
    isTelugu?"మీ బ్రౌజర్‌లో వాయిస్ ఇన్‌పుట్ అందుబాటులో లేదు. దయచేసి టైప్ చేయండి లేదా Chrome వాడండి.":
@@ -392,10 +390,10 @@ function startWebSpeechRecognition(isTelugu){
  try{
   recognition=new SpeechRecognitionAPI();
   recognition.lang=languageSelect.value;
-  recognition.continuous=false;
+  recognition.continuous=true;
   recognition.interimResults=true;
   recognition.maxAlternatives=1;
-  let baseText=messageInput.value.trim();
+  let finalSpoken="";
 
   recognition.onstart=()=>{
    updateVoiceUI(true,isTelugu?"వింటున్నాను...":"Listening...");
@@ -409,22 +407,21 @@ function startWebSpeechRecognition(isTelugu){
 
   recognition.onresult=event=>{
    let interim="";
-   let final="";
    for(let i=event.resultIndex;i<event.results.length;i++){
     const res=event.results[i];
     if(!res||!res[0])continue;
-    if(res.isFinal)final+=res[0].transcript+" ";
+    if(res.isFinal)finalSpoken+=res[0].transcript+" ";
     else interim+=res[0].transcript;
    }
-   const spoken=(final+interim).trim();
+   const spoken=(finalSpoken+interim).trim();
    if(spoken){
-    messageInput.value=baseText?(baseText+" "+spoken):spoken;
+    messageInput.value=spoken;
     setVoiceStatus("🗣️ "+spoken,"#176b3a");
    }
   };
 
   recognition.onerror=event=>{
-   console.warn("Speech recognition error:",event.error);
+   console.warn("Speech recognition notice:",event.error);
    if(event.error==="not-allowed"||event.error==="service-not-allowed"){
     setVoiceStatus(
      isTelugu?"⚠️ మైక్రోఫోన్ అనుమతి నిరాకరించబడింది. దయచేసి బ్రౌజర్ సెట్టింగ్స్‌లో అనుమతించండి.":
@@ -432,21 +429,22 @@ function startWebSpeechRecognition(isTelugu){
      "#b45309"
     );
    }else if(event.error==="network"){
-    console.info("Web Speech API network error, switching to direct microphone recording...");
-    if(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia){
-     startMediaRecorderAudio(isTelugu);
-    }else{
-     setVoiceStatus(
-      isTelugu?"⚠️ వాయిస్ నెట్‌వర్క్ అందుబాటులో లేదు. దయచేసి ప్రశ్నను టైప్ చేయండి.":
-      "⚠️ Speech service unreachable. Please type your question.",
-      "#b45309"
-     );
-    }
+    setVoiceStatus(
+     isTelugu?"⚠️ వాయిస్ నెట్‌వర్క్ తాత్కాలికంగా అందుబాటులో లేదు. దయచేసి మళ్లీ మాట్లాడండి లేదా ప్రశ్నను టైప్ చేయండి.":
+     "⚠️ Voice recognition service temporarily unreachable. Please try speaking again or type your question.",
+     "#b45309"
+    );
    }else if(event.error==="no-speech"){
     setVoiceStatus(
      isTelugu?"మాటలు రికార్డు కాలేదు. దయచేసి మైక్ దగ్గరగా మాట్లాడండి.":
      "No speech detected. Please speak closer to your microphone.",
      "#666"
+    );
+   }else if(event.error!=="aborted"){
+    setVoiceStatus(
+     isTelugu?"వాయిస్ ఇన్‌పుట్ తాత్కాలికంగా అందుబాటులో లేదు. దయచేసి టైప్ చేయండి.":
+     "Voice input temporarily unavailable. Please type your question.",
+     "#b45309"
     );
    }
   };
@@ -469,18 +467,14 @@ function startWebSpeechRecognition(isTelugu){
 
   recognition.start();
  }catch(err){
-  console.warn("Web Speech start failed, trying media recorder:",err);
+  console.warn("Web Speech start failed:",err);
   recognition=null;
-  if(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia){
-   startMediaRecorderAudio(isTelugu);
-  }else{
-   updateVoiceUI(false);
-   setVoiceStatus(
-    isTelugu?"వాయిస్ ఇన్‌పుట్ అందుబాటులో లేదు. దయచేసి టైప్ చేయండి.":
-    "Voice input unavailable. Please type your question.",
-    "#b45309"
-   );
-  }
+  updateVoiceUI(false);
+  setVoiceStatus(
+   isTelugu?"వాయిస్ ఇన్‌పుట్ అందుబాటులో లేదు. దయచేసి టైప్ చేయండి.":
+   "Voice input unavailable. Please type your question.",
+   "#b45309"
+  );
  }
 }
 
