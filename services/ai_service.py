@@ -159,8 +159,7 @@ def chat_completion(
         return None, provider, "quota"
 
     except (APIConnectionError, TimeoutError) as conn_err:
-        logger.warning(f"[AI Service] Connection/timeout exception for provider='{provider}' model='{model}': {type(conn_err).__name__} - {_safe_scrub(conn_err)}")
-        alt_model = BACKUP_GEMINI_MODEL if model != BACKUP_GEMINI_MODEL else DEFAULT_GEMINI_MODEL
+        
         if provider == "gemini" and model != alt_model:
             try:
                 logger.info(f"[AI Service] Retrying connection with backup model='{alt_model}'")
@@ -192,7 +191,7 @@ def chat_completion(
         return None, provider, "status_error"
 
     except Exception as exc:
-        logger.error(f"[AI Service] Unexpected completion error for provider='{provider}' model='{model}': {type(exc).__name__} - {_safe_scrub(exc)}")
+        logger.warning(f"[AI Service] Connection/timeout exception for provider='{provider}' model='{model}': {type(conn_err).__name__} - {_safe_scrub(conn_err)}")
         return None, provider, "unknown"
 
 
