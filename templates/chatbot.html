@@ -1,615 +1,84 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AgriGuide Farmer Chatbot / రైతు సహాయక చాట్‌బాట్</title>
-<style>
-*{box-sizing:border-box;margin:0;padding:0;font-family:'Segoe UI',Tahoma,sans-serif}
-body{background:#eef8f0;color:#2c3e50;min-height:100vh}
-nav{background:#176b3a;padding:16px 30px;color:white;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
-nav h2{font-size:22px}
-nav a{color:white;text-decoration:none;margin-left:15px;font-weight:500}
-.container{width:94%;max-width:950px;margin:20px auto}
-h1{text-align:center;color:#176b3a;margin-bottom:14px;font-size:26px}
-.top-controls{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;background:white;padding:12px 18px;border-radius:12px;border:1px solid #ddd;margin-bottom:15px}
-.control-group{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-.control-group label{font-size:14px;font-weight:600;color:#176b3a}
-#language{padding:8px 14px;border-radius:8px;border:1.5px solid #176b3a;background:white}
-.switch-container{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600}
-.switch-container input{width:18px;height:18px;accent-color:#176b3a}
-.chips-container{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:15px}
-.chip{background:#e0f2e9;color:#137333;border:1px solid #b7dfca;padding:7px 12px;border-radius:20px;font-size:13px;cursor:pointer}
-.chat-box{background:white;border:1px solid #ddd;border-radius:14px;padding:20px;min-height:350px;max-height:520px;overflow-y:auto;box-shadow:0 4px 15px #0000000f;display:flex;flex-direction:column;gap:12px}
-.message{padding:14px 18px;border-radius:14px;font-size:15.5px;line-height:1.6;max-width:88%;overflow-wrap:anywhere}
-.bot{background:#f0f9f3;color:#1e3a29;border:1px solid #d4ecd9;margin-right:auto;border-bottom-left-radius:4px}
-.user{background:#176b3a;color:white;margin-left:auto;border-bottom-right-radius:4px;white-space:pre-wrap}
-.bot ul,.bot ol{margin:6px 0 6px 20px}
-.msg-audio-bar{margin-top:10px;padding-top:8px;border-top:1px dashed #176b3a33;display:flex;gap:8px}
-.tts-btn{background:white;border:1px solid #176b3a;color:#176b3a;padding:5px 10px;border-radius:6px;cursor:pointer}
-.tts-btn.playing{background:#d93829;color:white}
-.input-area{display:flex;gap:10px;margin-top:15px}
-.input-wrapper{position:relative;flex:1}
-#messageInput{width:100%;padding:14px 48px 14px 16px;font-size:15px;border:1.5px solid #bbb;border-radius:10px;outline:none}
-#messageInput:focus{border-color:#176b3a}
-#messageInput.voice-active{border-color:#d93829}
-.mic-inside-btn{position:absolute;right:7px;top:50%;transform:translateY(-50%);background:transparent;border:0;font-size:20px;cursor:pointer;padding:7px}
-.main-btn{border:0;border-radius:10px;padding:12px 18px;font-size:15px;font-weight:600;cursor:pointer}
-#sendButton{background:#176b3a;color:white}
-#sendButton:disabled{opacity:.6;cursor:wait}
-.action-buttons{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap}
-#speakButton{background:#2b7a4b;color:white}
-#speakButton.recording{background:#d93829}
-#imageButton{background:#6a3ab2;color:white}
-#stopSpeechBtn{background:#5f6368;color:white;display:none}
-.voice-status-bar{display:none;align-items:center;justify-content:space-between;gap:10px;background:white;border:1px solid #d93829;border-radius:10px;padding:10px;margin-top:10px;flex-wrap:wrap}
-.voice-status-left{color:#d93829;font-weight:600;font-size:14px}
-.voice-status-actions{display:flex;gap:8px}
-.voice-action-btn{border:0;padding:7px 10px;border-radius:6px;cursor:pointer}
-.btn-done-send{background:#176b3a;color:white}
-.btn-cancel-rec{background:#eee;color:#333}
-#status{margin-top:10px;color:#555;font-size:14px;text-align:center;min-height:20px}
-#imageInput{display:none}
-.uploaded-preview-img{max-width:220px;max-height:180px;border-radius:8px;margin-top:8px;border:2px solid #ddd;display:block}
-.chat-photo-wrapper{display:flex;justify-content:center;margin:12px 0}
-.chat-dev-photo{width:130px;height:130px;border-radius:50%;object-fit:cover;object-position:center 18%;border:3px solid #176b3a;box-shadow:0 4px 12px rgba(23,107,58,0.25);display:block;background:#eef8f0}
-.chat-avatar-fallback{width:110px;height:110px;border-radius:50%;background:linear-gradient(135deg,#176b3a,#2d8a54);color:white;font-size:36px;font-weight:bold;display:flex;align-items:center;justify-content:center;border:3px solid #176b3a;box-shadow:0 4px 12px rgba(23,107,58,0.25)}
-.chat-link{color:#176b3a;font-weight:bold;text-decoration:underline}
-.chat-link:hover{color:#0f542d}
-@media(max-width:700px){nav{padding:14px;align-items:flex-start}nav a{margin-left:0;margin-right:12px}.container{width:96%}.input-area{flex-direction:column}.action-buttons{flex-direction:column}.action-buttons button{width:100%}.top-controls{align-items:flex-start;flex-direction:column}.message{max-width:95%}}
-</style>
-</head>
-<body>
-<nav>
-<h2>🌱 AgriGuide</h2>
-<div><a href="/">Home</a><a href="/dashboard">Dashboard</a><a href="/recommendation">Crop Recommendation</a></div>
-</nav>
+function startVoice() {
+    const SpeechRecognition =
+        window.SpeechRecognition ||
+        window.webkitSpeechRecognition;
 
-<div class="container">
-<h1>🌾 AgriGuide Farmer Chatbot / రైతు చాట్‌బాట్</h1>
-
-<div class="top-controls">
-<div class="control-group">
-<label for="language">🌐 Language / భాష:</label>
-<select id="language">
-<option value="en-IN">English (India)</option>
-<option value="en-US">English (US)</option>
-<option value="te-IN">తెలుగు (Telugu)</option>
-</select>
-</div>
-<label class="switch-container"><input type="checkbox" id="autoSpeechToggle" checked> 🔊 Auto Read Aloud / సమాధానాన్ని చదవండి</label>
-</div>
-
-<div class="chips-container">
-<button class="chip" onclick="useChip('వరిలో ఎరువుల యాజమాన్యం ఎలా చేయాలి?')">🌾 వరిలో ఎరువులు</button>
-<button class="chip" onclick="useChip('పత్తిలో గులాబీ రంగు పురుగు నివారణ పద్ధతులు?')">🐛 పత్తి పురుగు</button>
-<button class="chip" onclick="useChip('మిరపలో ముడత తెగులు గురించి చెప్పండి')">🌶️ మిరప సమస్యలు</button>
-<button class="chip" onclick="useChip('Best fertilizer for cotton crop in black soil?')">🌱 Cotton Fertilizer</button>
-<button class="chip" onclick="useChip('Nalla regadi nela lo kharif lo em panta veyali?')">💬 Tanglish Query</button>
-</div>
-
-<div id="chatBox" class="chat-box">
-<div class="message bot" id="welcomeBotMsg">
-<div>నమస్కారం రైతు సోదరా! 👋<br>మీ వ్యవసాయ ప్రశ్నను తెలుగులో లేదా ఇంగ్లీషులో టైప్ చేయండి, మాట్లాడండి, లేదా పంట ఆకు ఫోటోను అప్‌లోడ్ చేయండి.</div>
-<div class="msg-audio-bar"><button class="tts-btn" onclick="toggleMessageSpeech(this)">🔊 Listen / వినండి</button></div>
-</div>
-</div>
-
-<div class="input-area">
-<div class="input-wrapper">
-<input type="text" id="messageInput" placeholder="Type or speak your farming question...">
-<button type="button" id="micInsideBtn" class="mic-inside-btn" onclick="startListening()" title="Speak">🎤</button>
-</div>
-<button id="sendButton" class="main-btn" onclick="sendMessage()">Send / పంపండి</button>
-</div>
-
-<div id="voiceStatusBar" class="voice-status-bar">
-<div class="voice-status-left"><span id="voiceStatusMsg">🎤 Listening... / వింటున్నాను...</span></div>
-<div class="voice-status-actions">
-<button class="voice-action-btn btn-done-send" type="button" onclick="stopListening(true)">Done & Send / పూర్తయింది & పంపండి</button>
-<button class="voice-action-btn btn-cancel-rec" type="button" onclick="cancelVoiceRecording()">Cancel / రద్దు</button>
-</div>
-</div>
-
-<div class="action-buttons">
-<button id="speakButton" class="main-btn" onclick="startListening()">🎤 Speak / మాట్లాడండి</button>
-<button id="imageButton" class="main-btn" onclick="selectImage()">🖼️ Upload Crop Photo</button>
-<button id="stopSpeechBtn" class="main-btn" onclick="stopAllSpeech()">⏹️ Stop Voice / ఆపండి</button>
-</div>
-
-<input type="file" id="imageInput" accept="image/png,image/jpeg,image/webp" onchange="imageSelected()">
-<div id="status" role="status" aria-live="polite"></div>
-</div>
-
-<script>
-const languageSelect=document.getElementById("language");
-const autoSpeechToggle=document.getElementById("autoSpeechToggle");
-const messageInput=document.getElementById("messageInput");
-const chatBox=document.getElementById("chatBox");
-const statusText=document.getElementById("status");
-const sendBtn=document.getElementById("sendButton");
-const speakBtn=document.getElementById("speakButton");
-const micInsideBtn=document.getElementById("micInsideBtn");
-const stopSpeechBtn=document.getElementById("stopSpeechBtn");
-const voiceStatusBar=document.getElementById("voiceStatusBar");
-const voiceStatusMsg=document.getElementById("voiceStatusMsg");
-const imageInput=document.getElementById("imageInput");
-
-let conversationHistory=[];
-let recognition=null;
-let isListening=false;
-let activeTtsBtn=null;
-let availableVoices=[];
-
-function loadVoices(){
- if("speechSynthesis" in window) availableVoices=window.speechSynthesis.getVoices();
-}
-if("speechSynthesis" in window){
- loadVoices();
- window.speechSynthesis.onvoiceschanged=loadVoices;
-}
-
-function useChip(text){messageInput.value=text;sendMessage();}
-
-const chatPhotoCandidates = [
- "/static/images/developer.jpg",
- "/static/images/developer.png",
- "/static/images/developer.jpeg",
- "/static/images/developer.webp",
- "/static/developer.jpg",
- "/static/developer.png"
-];
-function handleChatPhotoError(img){
- let idx = parseInt(img.getAttribute("data-alt-idx") || "0", 10);
- idx++;
- if (idx < chatPhotoCandidates.length) {
-  img.setAttribute("data-alt-idx", idx);
-  img.src = chatPhotoCandidates[idx];
- } else {
-  img.style.display = "none";
-  const wrapper = img.closest(".chat-photo-wrapper");
-  if (wrapper) {
-   const fallback = wrapper.querySelector(".chat-avatar-fallback");
-   if (fallback) fallback.style.display = "flex";
-  }
- }
-}
-
-function formatMarkdown(text){
- if(!text)return "";
- let safe=String(text).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
- safe=safe.replace(/!\[(.*?)\]\((.*?)\)/g, '<div class="chat-photo-wrapper"><img src="$2" alt="$1" class="chat-dev-photo" data-alt-idx="0" onerror="handleChatPhotoError(this)"><div class="chat-avatar-fallback" style="display:none;"><span>HN</span></div></div>');
- safe=safe.replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" class="chat-link">$1</a>');
- safe=safe.replace(/\*\*(.*?)\*\*/g,"<strong>$1</strong>");
- const lines=safe.split("\n");
- let result=[],inList=false;
- for(const line of lines){
-  const trimmed=line.trim();
-  if(trimmed.startsWith("- ")||trimmed.startsWith("* ")){
-   if(!inList){result.push("<ul>");inList=true;}
-   result.push("<li>"+trimmed.slice(2)+"</li>");
-  }else{
-   if(inList){result.push("</ul>");inList=false;}
-   result.push(line);
-  }
- }
- if(inList)result.push("</ul>");
- return result.join("<br>");
-}
-
-function cleanTextForSpeech(text){
- return String(text||"").replace(/!\[.*?\]\(.*?\)/g,"").replace(/\[(.*?)\]\(.*?\)/g,"$1").replace(/<[^>]*>/g," ").replace(/\*\*(.*?)\*\*/g,"$1").replace(/[*#_`~]/g,"").replace(/https?:\/\/\S+/g,"").replace(/[\u{1F300}-\u{1FAFF}]/gu,"").replace(/\s+/g," ").trim();
-}
-
-function stopAllSpeech(){
- if("speechSynthesis" in window)window.speechSynthesis.cancel();
- if(activeTtsBtn){activeTtsBtn.classList.remove("playing");activeTtsBtn.innerText="🔊 Listen / వినండి";activeTtsBtn=null;}
- stopSpeechBtn.style.display="none";
-}
-
-function speakText(text,language,button=null){
- if(!("speechSynthesis" in window))return;
- stopAllSpeech();
- const clean=cleanTextForSpeech(text);
- if(!clean)return;
- const telugu=(language==="te"||language==="te-IN"||/[\u0C00-\u0C7F]/.test(clean));
- const targetLang=telugu?"te-IN":"en-IN";
- loadVoices();
- let voice=availableVoices.find(v=>v.lang.toLowerCase()===targetLang.toLowerCase());
- if(!voice)voice=availableVoices.find(v=>v.lang.toLowerCase().startsWith(telugu?"te":"en"));
- // If a Telugu voice is not installed, leave the Telugu answer visible instead of showing a false error.
- if(telugu&&!voice)return;
- if(button){activeTtsBtn=button;button.classList.add("playing");button.innerText="⏹️ Stop / ఆపండి";}
- stopSpeechBtn.style.display="inline-flex";
- const utterance=new SpeechSynthesisUtterance(clean);
- utterance.lang=targetLang;
- utterance.rate=telugu?0.9:0.95;
- if(voice)utterance.voice=voice;
- utterance.onend=()=>{if(activeTtsBtn===button)stopAllSpeech();};
- utterance.onerror=()=>stopAllSpeech();
- window.speechSynthesis.speak(utterance);
-}
-
-function toggleMessageSpeech(button){
- if(button.classList.contains("playing")){stopAllSpeech();return;}
- const parent=button.closest(".message");
- if(!parent)return;
- const copy=parent.cloneNode(true);
- const audio=copy.querySelector(".msg-audio-bar");
- if(audio)audio.remove();
- const text=copy.innerText;
- speakText(text,/[\u0C00-\u0C7F]/.test(text)?"te-IN":"en-IN",button);
-}
-
-function addMessage(content,type,isHtml=false){
- const div=document.createElement("div");
- div.className="message "+type;
- const textContainer=document.createElement("div");
- if(isHtml)textContainer.innerHTML=content;
- else textContainer.innerText=content;
- div.appendChild(textContainer);
- if(type==="bot"){
-  const audio=document.createElement("div");
-  audio.className="msg-audio-bar";
-  const btn=document.createElement("button");
-  btn.className="tts-btn";
-  btn.type="button";
-  btn.innerText="🔊 Listen / వినండి";
-  btn.onclick=()=>toggleMessageSpeech(btn);
-  audio.appendChild(btn);
-  div.appendChild(audio);
- }
- chatBox.appendChild(div);
- chatBox.scrollTop=chatBox.scrollHeight;
- return div;
-}
-
-async function sendMessage(){
- stopListening();
- stopAllSpeech();
- const message=messageInput.value.trim();
- if(!message)return;
- addMessage(message,"user");
- conversationHistory.push({role:"user",content:message});
- messageInput.value="";
- sendBtn.disabled=true;
- statusText.innerText="";
- const telugu=/[\u0C00-\u0C7F]/.test(message)||languageSelect.value.startsWith("te");
- const loading=addMessage(telugu?"సమాధానం సిద్ధమవుతోంది...":"Thinking...","bot");
- try{
-  const response=await fetch("/chat",{
-   method:"POST",
-   headers:{"Content-Type":"application/json"},
-   body:JSON.stringify({message:message,history:conversationHistory})
-  });
-  let data;
-  try{data=await response.json();}catch(e){data={};}
-  if(!response.ok){
-   loading.querySelector("div:first-child").innerText=data.reply||"The chatbot could not answer. Please try again.";
-   statusText.innerText="";
-   return;
-  }
-  if(!data.reply){
-   loading.querySelector("div:first-child").innerText="No answer was returned. Please try again.";
-   return;
-  }
-  loading.querySelector("div:first-child").innerHTML=formatMarkdown(data.reply);
-  conversationHistory.push({role:"assistant",content:data.reply});
-  if(autoSpeechToggle.checked){
-   const btn=loading.querySelector(".tts-btn");
-   speakText(data.reply,data.language||languageSelect.value,btn);
-  }
- }catch(error){
-  console.error("Chat request failed:",error);
-  loading.querySelector("div:first-child").innerText="Sorry, I couldn't connect to the chatbot. Please check your internet connection and try again.";
-  statusText.innerText="";
- }finally{
-  sendBtn.disabled=false;
- }
-}
-
-messageInput.addEventListener("keydown",event=>{if(event.key==="Enter"&&!event.isComposing)sendMessage();});
-languageSelect.addEventListener("change",()=>{
- messageInput.placeholder=languageSelect.value.startsWith("te")?"మీ వ్యవసాయ ప్రశ్నను టైప్ చేయండి లేదా మాట్లాడండి...":"Type or speak your farming question...";
- if(isListening)stopListening();
-});
-
-const SpeechRecognitionAPI=window.SpeechRecognition||window.webkitSpeechRecognition;
-let mediaRecorder=null;
-let audioChunks=[];
-let voiceSendOnStop=false;
-
-function setVoiceStatus(message,color="#176b3a"){
- voiceStatusMsg.innerText=message;
- statusText.style.color=color;
- statusText.innerText=message;
-}
-
-function updateVoiceUI(active,label="Listening..."){
- isListening=active;
- micInsideBtn.classList.toggle("recording",active);
- micInsideBtn.innerText=active?"🔴":"🎤";
- speakBtn.classList.toggle("recording",active);
- speakBtn.innerText=active?("🔴 "+label):"🎤 Speak / మాట్లాడండి";
- messageInput.classList.toggle("voice-active",active);
- voiceStatusBar.style.display=active?"flex":"none";
-}
-
-function stopListening(andSend=false){
- voiceSendOnStop=andSend;
- if(recognition){
-  try{recognition.stop();}catch(e){}
- }
- if(mediaRecorder&&mediaRecorder.state==="recording"){
-  try{mediaRecorder.stop();}catch(e){}
- }
- updateVoiceUI(false);
- if(andSend&&messageInput.value.trim()){
-  sendMessage();
- }
-}
-
-function cancelVoiceRecording(){
- voiceSendOnStop=false;
- if(recognition){
-  try{recognition.abort();}catch(e){}
-  recognition=null;
- }
- if(mediaRecorder&&mediaRecorder.state==="recording"){
-  try{mediaRecorder.stop();}catch(e){}
- }
- mediaRecorder=null;
- audioChunks=[];
- updateVoiceUI(false);
- messageInput.value="";
- statusText.innerText="";
-}
-
-function startListening(){
- if(isListening){
-  stopListening(false);
-  return;
- }
- stopAllSpeech();
- voiceSendOnStop=false;
- const isTelugu=languageSelect.value.startsWith("te");
-
- if(SpeechRecognitionAPI){
-  startWebSpeechRecognition(isTelugu);
- }else if(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia){
-  startMediaRecorderAudio(isTelugu);
- }else{
-  setVoiceStatus(
-   isTelugu?"మీ బ్రౌజర్‌లో వాయిస్ ఇన్‌పుట్ అందుబాటులో లేదు. దయచేసి టైప్ చేయండి లేదా Chrome వాడండి.":
-   "Voice input is not supported in this browser. Please type your question or use Chrome.",
-   "#b45309"
-  );
- }
-}
-
-function startWebSpeechRecognition(isTelugu){
- if(recognition){try{recognition.abort();}catch(e){}}
- try{
-  recognition=new SpeechRecognitionAPI();
-  recognition.lang=languageSelect.value;
-  recognition.continuous=false;
-  recognition.interimResults=true;
-  recognition.maxAlternatives=1;
-  let baseText=messageInput.value.trim();
-
-  recognition.onstart=()=>{
-   updateVoiceUI(true,isTelugu?"వింటున్నాను...":"Listening...");
-   messageInput.focus();
-   setVoiceStatus(
-    isTelugu?"🎤 మైక్రోఫోన్ ఆన్‌లో ఉంది... మీ వ్యవసాయ ప్రశ్న మాట్లాడండి":
-    "🎤 Listening... Speak your farming question clearly",
-    "#176b3a"
-   );
-  };
-
-  recognition.onresult=event=>{
-   let interim="";
-   let final="";
-   for(let i=event.resultIndex;i<event.results.length;i++){
-    const res=event.results[i];
-    if(!res||!res[0])continue;
-    if(res.isFinal)final+=res[0].transcript+" ";
-    else interim+=res[0].transcript;
-   }
-   const spoken=(final+interim).trim();
-   if(spoken){
-    messageInput.value=baseText?(baseText+" "+spoken):spoken;
-    setVoiceStatus("🗣️ "+spoken,"#176b3a");
-   }
-  };
-
-  recognition.onerror=event=>{
-   console.warn("Speech recognition error:",event.error);
-   if(event.error==="not-allowed"||event.error==="service-not-allowed"){
-    setVoiceStatus(
-     isTelugu?"⚠️ మైక్రోఫోన్ అనుమతి నిరాకరించబడింది. దయచేసి బ్రౌజర్ సెట్టింగ్స్‌లో అనుమతించండి.":
-     "⚠️ Microphone permission denied. Please allow microphone in browser address bar (lock icon).",
-     "#b45309"
-    );
-   }else if(event.error==="network"){
-    console.info("Web Speech API network error, switching to direct microphone recording...");
-    if(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia){
-     startMediaRecorderAudio(isTelugu);
-    }else{
-     setVoiceStatus(
-      isTelugu?"⚠️ వాయిస్ నెట్‌వర్క్ అందుబాటులో లేదు. దయచేసి ప్రశ్నను టైప్ చేయండి.":
-      "⚠️ Speech service unreachable. Please type your question.",
-      "#b45309"
-     );
+    if (!SpeechRecognition) {
+        statusText.innerText =
+            "Voice input is not supported in this browser. Please use Google Chrome.";
+        return;
     }
-   }else if(event.error==="no-speech"){
-    setVoiceStatus(
-     isTelugu?"మాటలు రికార్డు కాలేదు. దయచేసి మైక్ దగ్గరగా మాట్లాడండి.":
-     "No speech detected. Please speak closer to your microphone.",
-     "#666"
-    );
-   }
-  };
 
-  recognition.onend=()=>{
-   updateVoiceUI(false);
-   recognition=null;
-   if(messageInput.value.trim()){
-    if(voiceSendOnStop){
-     sendMessage();
-    }else{
-     setVoiceStatus(
-      isTelugu?"✅ ప్రశ్న రికార్డయ్యింది! పంపడానికి Send / పంపండి క్లిక్ చేయండి.":
-      "✅ Speech recognized! Press 'Send' to submit your question.",
-      "#176b3a"
-     );
+    const recognition = new SpeechRecognition();
+
+    recognition.lang = languageSelect.value;
+    recognition.continuous = false;
+    recognition.interimResults = true;
+    recognition.maxAlternatives = 1;
+
+    let finalText = "";
+    let hasSent = false;
+
+    messageInput.value = "";
+
+    statusText.innerText =
+        languageSelect.value === "te-IN"
+            ? "వింటున్నాను... దయచేసి మాట్లాడండి."
+            : "Listening... Please speak.";
+
+    recognition.onresult = function(event) {
+        let temporaryText = "";
+
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+            const transcript = event.results[i][0].transcript;
+
+            if (event.results[i].isFinal) {
+                finalText += transcript + " ";
+            } else {
+                temporaryText += transcript;
+            }
+        }
+
+        messageInput.value =
+            (finalText + temporaryText).trim();
+
+        messageInput.dispatchEvent(
+            new Event("input", { bubbles: true })
+        );
+    };
+
+    recognition.onerror = function(event) {
+        console.error("Speech recognition error:", event.error);
+
+        if (event.error === "not-allowed") {
+            statusText.innerText =
+                "Please allow microphone access in Chrome.";
+        } else {
+            statusText.innerText =
+                "Voice recognition failed. Please try again or type your question.";
+        }
+    };
+
+    recognition.onend = function() {
+        if (hasSent) return;
+
+        const spokenText = messageInput.value.trim();
+
+        if (spokenText) {
+            hasSent = true;
+            statusText.innerText = "Voice received. Sending...";
+            sendMessage();
+        } else {
+            statusText.innerText =
+                "No words recognized. Please try again.";
+        }
+    };
+
+    try {
+        recognition.start();
+    } catch (error) {
+        console.error("Could not start recognition:", error);
+        statusText.innerText =
+            "Unable to start voice input. Please try again.";
     }
-   }
-  };
-
-  recognition.start();
- }catch(err){
-  console.warn("Web Speech start failed, trying media recorder:",err);
-  recognition=null;
-  if(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia){
-   startMediaRecorderAudio(isTelugu);
-  }else{
-   updateVoiceUI(false);
-   setVoiceStatus(
-    isTelugu?"వాయిస్ ఇన్‌పుట్ అందుబాటులో లేదు. దయచేసి టైప్ చేయండి.":
-    "Voice input unavailable. Please type your question.",
-    "#b45309"
-   );
-  }
- }
 }
-
-async function startMediaRecorderAudio(isTelugu){
- try{
-  const stream=await navigator.mediaDevices.getUserMedia({audio:true});
-  audioChunks=[];
-  let mimeType="audio/webm";
-  if(!MediaRecorder.isTypeSupported("audio/webm")){
-   if(MediaRecorder.isTypeSupported("audio/mp4"))mimeType="audio/mp4";
-   else if(MediaRecorder.isTypeSupported("audio/ogg"))mimeType="audio/ogg";
-   else mimeType="";
-  }
-  mediaRecorder=mimeType?new MediaRecorder(stream,{mimeType}):new MediaRecorder(stream);
-  mediaRecorder.ondataavailable=e=>{if(e.data&&e.data.size>0)audioChunks.push(e.data);};
-  mediaRecorder.onstart=()=>{
-   updateVoiceUI(true,isTelugu?"రికార్డింగ్...":"Recording...");
-   setVoiceStatus(
-    isTelugu?"🎙️ రికార్డింగ్ ప్రారంభమైంది... ప్రశ్న మాట్లాడి 'Done & Send' క్లిక్ చేయండి":
-    "🎙️ Recording voice... Speak your question and click 'Done & Send' when finished",
-    "#176b3a"
-   );
-  };
-  mediaRecorder.onstop=async()=>{
-   stream.getTracks().forEach(track=>track.stop());
-   updateVoiceUI(false);
-   if(audioChunks.length===0)return;
-   const audioBlob=new Blob(audioChunks,{type:mediaRecorder.mimeType||"audio/wav"});
-   audioChunks=[];
-   setVoiceStatus(
-    isTelugu?"⏳ మాటలను గుర్తిస్తోంది...":
-    "⏳ Transcribing your speech...",
-    "#176b3a"
-   );
-   const formData=new FormData();
-   formData.append("audio",audioBlob,"voice_query.webm");
-   formData.append("language",isTelugu?"te":"en");
-   try{
-    const res=await fetch("/transcribe-audio",{method:"POST",body:formData});
-    const data=await res.json();
-    if(data&&data.success&&data.transcript){
-     const current=messageInput.value.trim();
-     messageInput.value=current?(current+" "+data.transcript):data.transcript;
-     if(voiceSendOnStop){
-      sendMessage();
-     }else{
-      setVoiceStatus(
-       isTelugu?"✅ ప్రశ్న గుర్తించబడింది! Send క్లిక్ చేయండి.":
-       "✅ Speech transcribed! Press 'Send' to submit.",
-       "#176b3a"
-      );
-     }
-    }else{
-     setVoiceStatus(
-      data.reply||(isTelugu?"మాటలు స్పష్టంగా వినపడలేదు. మళ్లీ మాట్లాడండి లేదా టైప్ చేయండి.":"Could not recognize speech. Please try speaking again or type."),
-      "#b45309"
-     );
-    }
-   }catch(fetchErr){
-    console.error("Audio transcription request failed:",fetchErr);
-    setVoiceStatus(
-     isTelugu?"వాయిస్ ప్రాసెసింగ్ విఫలమైంది. దయచేసి ప్రశ్నను టైప్ చేయండి.":
-     "Voice processing failed. Please type your question.",
-     "#b45309"
-    );
-   }
-  };
-  mediaRecorder.start(250);
- }catch(micErr){
-  console.error("Microphone access failed:",micErr);
-  updateVoiceUI(false);
-  setVoiceStatus(
-   isTelugu?"⚠️ మైక్రోఫోన్ అనుమతి నిరాకరించబడింది. దయచేసి బ్రౌజర్‌లో మైక్రోఫోన్ ఆన్ చేయండి.":
-   "⚠️ Microphone access blocked. Please allow microphone permissions in your browser.",
-   "#b45309"
-  );
- }
-}
-
-async function selectImage(){imageInput.click();}
-
-async function imageSelected(){
- const file=imageInput.files[0];
- if(!file)return;
- if(!file.type.startsWith("image/")){
-  statusText.innerText="Please select an image file.";
-  imageInput.value="";
-  return;
- }
- if(file.size>5*1024*1024){
-  statusText.innerText="Please choose an image smaller than 5 MB.";
-  imageInput.value="";
-  return;
- }
- stopAllSpeech();
- const userBubble=addMessage("Uploaded crop photo: "+file.name,"user");
- const preview=document.createElement("img");
- preview.className="uploaded-preview-img";
- preview.alt="Selected crop photo";
- preview.src=URL.createObjectURL(file);
- userBubble.appendChild(preview);
- const loading=addMessage("🔍 Inspecting the crop photo...","bot");
- statusText.innerText="Analyzing crop photo... / పంట ఫోటోను పరిశీలిస్తోంది...";
- const formData=new FormData();
- formData.append("image",file);
- formData.append("caption",messageInput.value.trim());
- try{
-  const response=await fetch("/chat-image",{method:"POST",body:formData});
-  let data;
-  try{data=await response.json();}catch(e){data={};}
-  if(!response.ok||!data.reply){
-   loading.querySelector("div:first-child").innerText=data.reply||"I couldn't analyze this photo. Please try a clear crop image or describe the problem in text.";
-  }else{
-   loading.querySelector("div:first-child").innerHTML=formatMarkdown(data.reply);
-   if(autoSpeechToggle.checked)speakText(data.reply,data.language||languageSelect.value,loading.querySelector(".tts-btn"));
-  }
- }catch(error){
-  console.error("Image analysis failed:",error);
-  loading.querySelector("div:first-child").innerText="I couldn't connect to the image analysis service. Please try again or describe the crop problem in text.";
- }finally{
-  statusText.innerText="";
-  imageInput.value="";
- }
-}
-
-window.addEventListener("beforeunload",()=>{
- if(recognition){try{recognition.stop();}catch(e){}}
- stopAllSpeech();
-});
-</script>
-</body>
-</html>
