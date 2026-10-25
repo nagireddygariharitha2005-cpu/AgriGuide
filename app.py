@@ -410,7 +410,25 @@ def chat():
 
     # Process query through bilingual AI service
     result = ask_agricultural_chat(message, conversation_history=history)
+    logger.info(
+        f"[/chat] Processed query (len={len(message)}): provider={result.get('provider')}, "
+        f"lang={result.get('language')}, configured={result.get('configured')}"
+    )
     return jsonify(result)
+
+
+# =========================
+# AI DIAGNOSTIC STATUS API
+# =========================
+
+@app.route("/api/ai-status")
+def ai_status():
+    """
+    Safe diagnostic endpoint returning AI provider configuration status without secrets.
+    Allows farmers and administrators to verify that GEMINI_API_KEY is active in production.
+    """
+    from services.ai_service import check_ai_configuration
+    return jsonify(check_ai_configuration())
 
 
 # =========================

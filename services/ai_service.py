@@ -69,6 +69,36 @@ def get_ai_client_and_model() -> Tuple[Optional[OpenAI], Optional[str], Optional
     return None, None, None
 
 
+def check_ai_configuration() -> Dict[str, Any]:
+    """
+    Returns AI configuration diagnostic status without exposing any secret keys or values.
+    Safe for production verification on Vercel.
+    """
+    gemini_key = os.getenv("GEMINI_API_KEY")
+    openai_key = os.getenv("OPENAI_API_KEY")
+    gemini_ok = bool(gemini_key and gemini_key.strip())
+    openai_ok = bool(openai_key and openai_key.strip())
+    configured_model = os.getenv("GEMINI_MODEL", DEFAULT_GEMINI_MODEL).strip()
+    return {
+        "status": "online" if (gemini_ok or openai_ok) else "offline",
+        "gemini_configured": gemini_ok,
+        "gemini_key_length": len(gemini_key.strip()) if gemini_ok else 0,
+        "primary_model": DEFAULT_GEMINI_MODEL,
+        "backup_model": BACKUP_GEMINI_MODEL,
+        "configured_model": configured_model,
+        "openai_configured": openai_ok,
+        "environment": "vercel" if bool(os.getenv("VERCEL")) else "local"
+    }
+
+
+def _safe_scrub(text: Any) -> str:
+    """Scrubs any potential sensitive strings/keys from log outputs."""
+    raw = str(text or "")
+    import re
+    # Redact Google API key pattern (AIzaSy...)
+    return re.sub(r'AIza[0-9A-Za-z-_]{35}', '[REDACTED_GEMINI_KEY]', raw)
+
+
 def chat_completion(
     messages: List[Dict[str, Any]],
     temperature: float = 0.6,
@@ -87,6 +117,7 @@ def chat_completion(
     """
     client, model, provider = get_ai_client_and_model()
     if not client:
+        logger.warning("[AI Service] No valid API key configured. Check GEMINI_API_KEY environment variable.")
         return None, None, "missing_key"
 
     kwargs: Dict[str, Any] = {
@@ -101,36 +132,38 @@ def chat_completion(
     try:
         completion = client.chat.completions.create(**kwargs)
         if not completion.choices or not completion.choices[0].message:
+            logger.warning(f"[AI Service] Empty completion choice from provider='{provider}' model='{model}'")
             return None, provider, "empty_response"
         content = completion.choices[0].message.content
         return (content.strip() if content else ""), provider, None
 
-    except AuthenticationError:
-        logger.error("AI authentication failed: invalid or unauthorized API key")
+    except AuthenticationError as auth_err:
+        logger.error(f"[AI Service] Authentication failed for provider='{provider}' model='{model}': {_safe_scrub(auth_err)}")
         return None, provider, "invalid_key"
 
     except RateLimitError as err:
-        logger.warning(f"AI rate limit/quota hit for model {model}: {err}")
+        logger.warning(f"[AI Service] Rate limit / quota exceeded for provider='{provider}' model='{model}': {_safe_scrub(err)}")
         # Try alternate model if on Google Gemini
         alt_model = BACKUP_GEMINI_MODEL if model != BACKUP_GEMINI_MODEL else DEFAULT_GEMINI_MODEL
         if provider == "gemini" and model != alt_model:
             try:
-                logger.info(f"Attempting fallback to model {alt_model}")
+                logger.info(f"[AI Service] Attempting fallback to backup model='{alt_model}'")
                 kwargs["model"] = alt_model
                 completion = client.chat.completions.create(**kwargs)
                 if completion.choices and completion.choices[0].message:
                     content = completion.choices[0].message.content
-                    return (content.strip() if content else ""), provider, None
+                    if content and content.strip():
+                        return content.strip(), provider, None
             except Exception as alt_err:
-                logger.warning(f"Fallback model {alt_model} also exhausted or failed: {alt_err}")
+                logger.warning(f"[AI Service] Fallback model='{alt_model}' also failed: {type(alt_err).__name__} - {_safe_scrub(alt_err)}")
         return None, provider, "quota"
 
     except (APIConnectionError, TimeoutError) as conn_err:
-        logger.warning(f"AI connection timeout or network failure: {conn_err}")
+        logger.warning(f"[AI Service] Connection/timeout exception for provider='{provider}' model='{model}': {type(conn_err).__name__} - {_safe_scrub(conn_err)}")
         alt_model = BACKUP_GEMINI_MODEL if model != BACKUP_GEMINI_MODEL else DEFAULT_GEMINI_MODEL
         if provider == "gemini" and model != alt_model:
             try:
-                logger.info(f"Retrying connection with backup model {alt_model}")
+                logger.info(f"[AI Service] Retrying connection with backup model='{alt_model}'")
                 kwargs["model"] = alt_model
                 completion = client.chat.completions.create(**kwargs)
                 if completion.choices and completion.choices[0].message:
@@ -138,16 +171,16 @@ def chat_completion(
                     if content and content.strip():
                         return content.strip(), provider, None
             except Exception as retry_err:
-                logger.warning(f"Backup retry also timed out or failed: {retry_err}")
+                logger.warning(f"[AI Service] Backup model retry failed: {type(retry_err).__name__} - {_safe_scrub(retry_err)}")
         return None, provider, "timeout"
 
     except APIStatusError as err:
-        logger.error(f"AI API status error: {err.status_code}")
-        # If model returned 503 or 404 or 500/502/504, retry once with alternate model
+        logger.error(f"[AI Service] HTTP status error from provider='{provider}' model='{model}': HTTP {err.status_code} - {_safe_scrub(err.message or err)}")
+        # If model returned 503, 500, 502, 504, or 404, retry once with alternate model
         alt_model = BACKUP_GEMINI_MODEL if model != BACKUP_GEMINI_MODEL else DEFAULT_GEMINI_MODEL
         if provider == "gemini" and err.status_code in (404, 500, 502, 503, 504) and model != alt_model:
             try:
-                logger.info(f"Retrying chat completion with alternate model {alt_model}")
+                logger.info(f"[AI Service] Retrying status error with backup model='{alt_model}'")
                 kwargs["model"] = alt_model
                 completion = client.chat.completions.create(**kwargs)
                 if completion.choices and completion.choices[0].message:
@@ -155,11 +188,11 @@ def chat_completion(
                     if content and content.strip():
                         return content.strip(), provider, None
             except Exception as retry_err:
-                logger.error(f"Retry with {alt_model} failed: {retry_err}")
+                logger.error(f"[AI Service] Backup status retry failed: {type(retry_err).__name__} - {_safe_scrub(retry_err)}")
         return None, provider, "status_error"
 
     except Exception as exc:
-        logger.error(f"Unexpected AI completion error: {type(exc).__name__}")
+        logger.error(f"[AI Service] Unexpected completion error for provider='{provider}' model='{model}': {type(exc).__name__} - {_safe_scrub(exc)}")
         return None, provider, "unknown"
 
 
